@@ -1,4 +1,5 @@
 import axios from 'axios';
+import score from './score';
 import Throttler from './throttler';
 import URI from 'urijs';
 
@@ -9,6 +10,26 @@ const TOKEN = 'grcVabYRkUKTfMhkZoUJOzHQyeumEYkiAsUtMJjw';
 export default class Discogs {
   constructor() {
     this.throttler = new Throttler(REQUESTS_PER_MINUTE);
+  }
+
+  getReleaseRating(releaseListing) {
+    return this.getUrl(releaseListing.resource_url).then(release => {
+      if (release.versions_url) {
+        return this.getPaginatedUrl(release.versions_url, 'versions')
+        .then(versions => Promise.all(versions.map(version => this.getUrl(version.resource_url))))
+        .then(versions => {
+          const count = versions.reduce((totalCount, version) => totalCount + version.community.rating.count, 0);
+          const average = versions.reduce((totalRating, version) => totalRating + version.community.rating.average * version.community.rating.count, 0) / count; 
+          return {
+            count,
+            average,
+            score: score(average, count)
+          };
+        });
+      } else {
+        return Promise.resolve({...release.community.rating, score: score(release.community.rating.average, release.community.rating.count)});
+      }
+    });
   }
 
   getArtistReleases(artistId) {
