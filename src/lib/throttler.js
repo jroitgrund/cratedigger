@@ -21,4 +21,4 @@ export default class Throttler {
       return Promise.resolve(action());
     }
   }
-}
+};

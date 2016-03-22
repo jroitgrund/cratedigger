@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Throttler from './throttler';
 import URI from 'urijs';
 
 const URL_ROOT = 'https://api.discogs.com';
@@ -7,7 +8,7 @@ const TOKEN = 'grcVabYRkUKTfMhkZoUJOzHQyeumEYkiAsUtMJjw';
 
 export default class Discogs {
   constructor() {
-    this.requests = [];
+    this.throttler = new Throttler(REQUESTS_PER_MINUTE);
   }
 
   getArtistReleases(artistId) {
@@ -26,7 +27,8 @@ export default class Discogs {
   }
 
   getUrl(url) {
-    return this.makeRequest(() => axios.get(new URI(url).addQuery('token', TOKEN)));
+    return this.throttler.do(() => axios.get(new URI(url).addQuery('token', TOKEN)))
+        .then(res => res.data);
   }
 
   handlePaginatedResponse(initialResponsePromise, url) {
@@ -40,24 +42,5 @@ export default class Discogs {
               page => this.getUrl(new URI(url).addQuery('page', page + 2)))));
           }
         });
-  }
-
-  makeRequest(requestFunction) {
-    const now = new Date().getTime();
-    const filterTime = now - 60000;
-    const getData = () => requestFunction().then(response => response.data);
-    this.requests = this.requests.filter(time => time > filterTime);
-    if (this.requests.length >= REQUESTS_PER_MINUTE) {
-      const nextRequestTime = this.requests.shift() + 60000;
-      this.requests.push(nextRequestTime);
-      return new Promise((resolve, reject) => {
-        setTimeout(
-          () => resolve(getData()),
-          Math.max(0, nextRequestTime - now))
-      });
-    } else {
-      this.requests.push(now);
-      return getData();
-    }
   }
 };

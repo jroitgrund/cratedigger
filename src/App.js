@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Discogs from './discogs';
+import Discogs from './lib/discogs';
 
 export default class App extends Component {
   constructor(props) {
