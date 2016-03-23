@@ -1,7 +1,8 @@
-import Throttler from '../../src/lib/throttler';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import lolex from 'lolex';
+
+import Throttler from '../../src/lib/throttler';
 
 /* eslint-disable prefer-arrow-callback, func-names */
 

@@ -1,5 +1,6 @@
-import score from '../../src/lib/score';
 import chai from 'chai';
+
+import score from '../../src/lib/score';
 
 /* eslint-disable prefer-arrow-callback, func-names */
 

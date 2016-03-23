@@ -2,5 +2,5 @@
   "extends": "airbnb",
   "env": {
     "mocha": true,
-  }
+  },
 }

@@ -1,16 +1,21 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
-import App from './App';
-import actionsFunction from './actions';
-import reducers from './reducers';
-import thunkMiddleware from 'redux-thunk';
-import { createStore, applyMiddleware } from 'redux';
-import Discogs from './lib/discogs';
+import ReactDOM from 'react-dom';
 import { connect, Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import URI from 'urijs';
+
+import actionsFactory from './actions';
+import App from './App';
+import axios from 'axios';
+import Discogs from './lib/discogs';
+import score from './lib/score';
+import Throttler from './lib/throttler';
+import reducers from './reducers';
 
 const store = createStore(reducers, applyMiddleware(thunkMiddleware));
-
-const actions = actionsFunction(new Discogs());
+const actions = actionsFactory(
+  new Discogs(axios, score, Throttler, URI));
 
 const ConnectedApp = connect(
   state => state,

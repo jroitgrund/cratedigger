@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+
 import artists from './artists';
 import releases from './releases';
 

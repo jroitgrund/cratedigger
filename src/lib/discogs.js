@@ -1,7 +1,3 @@
-import axios from 'axios';
-import score from './score';
-import Throttler from './throttler';
-import URI from 'urijs';
 import update from 'react-addons-update';
 
 const URL_ROOT = 'https://api.discogs.com';
@@ -9,8 +5,11 @@ const REQUESTS_PER_MINUTE = 240;
 const TOKEN = 'grcVabYRkUKTfMhkZoUJOzHQyeumEYkiAsUtMJjw';
 
 export default class Discogs {
-  constructor() {
+  constructor(axios, score, Throttler, URI) {
+    this.axios = axios;
+    this.score = score;
     this.throttler = new Throttler(REQUESTS_PER_MINUTE);
+    this.URI = URI;
   }
 
   getReleaseRating(releaseListing) {
@@ -26,7 +25,7 @@ export default class Discogs {
           return {
             count,
             average,
-            score: score(average, count),
+            score: this.score(average, count),
           };
         });
       }
@@ -36,7 +35,7 @@ export default class Discogs {
         release.community.rating,
         {
           $merge: {
-            score: score(release.community.rating.average, release.community.rating.count),
+            score: this.score(release.community.rating.average, release.community.rating.count),
           },
         }));
     });
@@ -59,7 +58,7 @@ export default class Discogs {
   }
 
   getUrl(url) {
-    return this.throttler.do(() => axios.get(new URI(url).addQuery('token', TOKEN)))
+    return this.throttler.do(() => this.axios.get(new this.URI(url).addQuery('token', TOKEN)))
         .then(res => res.data);
   }
 
@@ -73,7 +72,7 @@ export default class Discogs {
 
           // else
           return Promise.all([response].concat([...Array(pages - 1).keys()].map(
-            page => this.getUrl(new URI(url).addQuery('page', page + 2)))));
+            page => this.getUrl(new this.URI(url).addQuery('page', page + 2)))));
         });
   }
 }
