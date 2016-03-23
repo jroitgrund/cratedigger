@@ -1,29 +1,25 @@
 const actions = discogs => {
-
-  const searchForArtist = searchTerm => {
-    return dispatch => {
-      discogs.searchForArtist(searchTerm).then(
-        artists => dispatch(receiveArtists(artists)));
-    }
-  };
-
-  const getArtistReleases = artist => {
-    return dispatch => {
-      discogs.getArtistReleases(artist.id).then(
-        releases => receiveAndGetRatingsForReleases(dispatch, releases));
-    };
-  };
-
   // Private internal actions.
+  const receiveArtists = artists => ({
+    type: 'RECEIVE_ARTISTS',
+    payload: {
+      artists,
+    },
+  });
 
-  const receiveArtists = artists => {
-    return {
-      type:  'RECEIVE_ARTISTS',
-      payload: {
-        artists
-      }
-    };
-  };
+  const receiveReleases = releases => ({
+    type: 'RECEIVE_RELEASES',
+    payload: {
+      releases,
+    },
+  });
+
+  const receiveRatings = ratings => ({
+    type: 'RECEIVE_RATINGS',
+    payload: {
+      ratings,
+    },
+  });
 
   const receiveAndGetRatingsForReleases = (dispatch, releases) => {
     dispatch(receiveReleases(releases));
@@ -31,29 +27,22 @@ const actions = discogs => {
       ratings => dispatch(receiveRatings(ratings)));
   };
 
-  const receiveReleases = releases => {
-    return {
-      type: 'RECEIVE_RELEASES',
-      payload: {
-        releases
-      }
-    };
+  // Public actions
+
+  const searchForArtist = searchTerm => dispatch => {
+    discogs.searchForArtist(searchTerm).then(
+      artists => dispatch(receiveArtists(artists)));
   };
 
-  const receiveRatings = ratings => {
-    return {
-      type: 'RECEIVE_RATINGS',
-      payload: {
-        ratings,
-      }
-    };
+  const getArtistReleases = artist => dispatch => {
+    discogs.getArtistReleases(artist.id).then(
+      releases => receiveAndGetRatingsForReleases(dispatch, releases));
   };
 
   return {
     searchForArtist,
-    getArtistReleases
+    getArtistReleases,
   };
-
-}
+};
 
 export default actions;

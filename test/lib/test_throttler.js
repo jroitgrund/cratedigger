@@ -3,30 +3,31 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import lolex from 'lolex';
 
+/* eslint-disable prefer-arrow-callback, func-names */
+
 chai.use(chaiAsPromised);
 chai.should();
 
-describe('Throttler', function() {
-
+describe('Throttler', function () {
   let clock;
   let throttler;
 
-  beforeEach(function() {
+  beforeEach(function () {
     clock = lolex.install();
     throttler = new Throttler(2);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     clock.uninstall();
   });
 
-  it('performs actions synchronously while it can', function() {
+  it('performs actions synchronously while it can', function () {
     throttler.do(() => {});
 
     return throttler.do(() => 5).should.eventually.equal(5);
   });
 
-  it('stops when the action limit is hit', function(done) {
+  it('stops when the action limit is hit', function (done) {
     clock.uninstall();
     setTimeout(() => done(), 1500);
     clock = lolex.install();
@@ -38,7 +39,7 @@ describe('Throttler', function() {
     throttler.do(() => 5).should.eventually.not.equal(5).notify(done);
   });
 
-  it('queues actions and performs them after a minute', function() {
+  it('queues actions and performs them after a minute', function (done) {
     clock.uninstall();
     setTimeout(() => done(), 1500);
     clock = lolex.install();
@@ -48,6 +49,6 @@ describe('Throttler', function() {
     throttler.do(() => {});
     clock.tick(65000);
 
-    return throttler.do(() => 5).should.eventually.equal(5);
+    throttler.do(() => 5).should.eventually.equal(5).notify(done);
   });
 });

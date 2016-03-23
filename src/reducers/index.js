@@ -1,10 +1,10 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import artists from './artists';
 import releases from './releases';
 
 const reducers = combineReducers({
   artists,
-  releases
+  releases,
 });
 
 export default reducers;

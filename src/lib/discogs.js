@@ -2,6 +2,7 @@ import axios from 'axios';
 import score from './score';
 import Throttler from './throttler';
 import URI from 'urijs';
+import update from 'react-addons-update';
 
 const URL_ROOT = 'https://api.discogs.com';
 const REQUESTS_PER_MINUTE = 240;
@@ -18,17 +19,26 @@ export default class Discogs {
         return this.getPaginatedUrl(release.versions_url, 'versions')
         .then(versions => Promise.all(versions.map(version => this.getUrl(version.resource_url))))
         .then(versions => {
-          const count = versions.reduce((totalCount, version) => totalCount + version.community.rating.count, 0);
-          const average = versions.reduce((totalRating, version) => totalRating + version.community.rating.average * version.community.rating.count, 0) / count; 
+          const count = versions.reduce(
+            (totalCount, version) => totalCount + version.community.rating.count, 0);
+          const average = versions.reduce((totalRating, version) => totalRating
+            + version.community.rating.average * version.community.rating.count, 0) / count;
           return {
             count,
             average,
-            score: score(average, count)
+            score: score(average, count),
           };
         });
-      } else {
-        return Promise.resolve({...release.community.rating, score: score(release.community.rating.average, release.community.rating.count)});
       }
+
+      // else
+      return Promise.resolve(update(
+        release.community.rating,
+        {
+          $merge: {
+            score: score(release.community.rating.average, release.community.rating.count),
+          },
+        }));
     });
   }
 
@@ -37,7 +47,8 @@ export default class Discogs {
   }
 
   searchForArtist(artistName) {
-    return this.getPaginatedUrl(`${URL_ROOT}/database/search?q=${artistName}&type=artist`, 'results')
+    return this.getPaginatedUrl(
+      `${URL_ROOT}/database/search?q=${artistName}&type=artist`, 'results');
   }
 
   // Private
@@ -56,12 +67,13 @@ export default class Discogs {
     return initialResponsePromise
         .then(response => {
           const pages = response.pagination.pages;
-          if (pages == 1) {
+          if (pages === 1) {
             return Promise.resolve([response]);
-          } else {
-            return Promise.all([response].concat([...Array(pages - 1).keys()].map(
-              page => this.getUrl(new URI(url).addQuery('page', page + 2)))));
           }
+
+          // else
+          return Promise.all([response].concat([...Array(pages - 1).keys()].map(
+            page => this.getUrl(new URI(url).addQuery('page', page + 2)))));
         });
   }
-};
+}

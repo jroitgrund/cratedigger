@@ -1,5 +1,5 @@
 const artists = (state = [], action) => {
-  switch(action.type) {
+  switch (action.type) {
     case 'RECEIVE_ARTISTS':
       return [...action.payload.artists];
     default:

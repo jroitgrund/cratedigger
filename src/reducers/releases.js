@@ -1,7 +1,7 @@
 import update from 'react-addons-update';
 
 const releases = (state = [], action) => {
-  switch(action.type) {
+  switch (action.type) {
     case 'RECEIVE_RELEASES':
       return [...action.payload.releases];
     case 'RECEIVE_RATINGS':
@@ -11,11 +11,12 @@ const releases = (state = [], action) => {
           {
             $merge: {
               community: {
-                rating: action.payload.ratings[i]
-              }
-            }
+                rating: action.payload.ratings[i],
+              },
+            },
           }))
-        .sort((release1, release2) => release2.community.rating.score - release1.community.rating.score);
+        .sort((release1, release2) =>
+          release2.community.rating.score - release1.community.rating.score);
     default:
       return state;
   }

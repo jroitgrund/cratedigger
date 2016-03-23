@@ -1,10 +1,6 @@
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
+class App extends Component {
   render() {
     return (
       <div>
@@ -14,9 +10,10 @@ export default class App extends Component {
         </div>
         <div className="form-group">
           <input type="button"
-              className="btn btn-block btn-lg btn-primary"
-              onClick={() => this.props.onSearchForArtist(this.refs.artistText.value)}
-              value="Search" />
+            className="btn btn-block btn-lg btn-primary"
+            onClick={() => this.props.onSearchForArtist(this.refs.artistText.value)}
+            value="Search"
+          />
         </div>
       </form>
       <div className="row">
@@ -32,7 +29,12 @@ export default class App extends Component {
           {this.props.releases.map((release, i) =>
             <li key={i}>
               <a href={release.resource_url} role="button">
-                {release.title} - {release.community && release.community.rating && release.community.rating.score ? <span>{release.community.rating.score} - {release.community.rating.average} - {release.community.rating.count}</span> : ''}
+                {release.title} -
+                {release.community && release.community.rating && release.community.rating.score
+                  ? <span>{release.community.rating.score} -
+                          {release.community.rating.average} -
+                          {release.community.rating.count}</span>
+                  : ''}
               </a>
             </li>)}
         </ul>
@@ -40,21 +42,13 @@ export default class App extends Component {
       </div>
     );
   }
-
-  /*getReleaseRating(release) {
-    this.discogs.getReleaseRating(release).then(rating => this.setState({rating}));
-  }
-
-  getArtistDetails(artistId) {
-    this.discogs.getArtistReleases(artistId).then(releases => {
-      this.setState({releases});
-      releases.forEach(release => {
-        this.discogs.getReleaseRating(release).then(rating => {
-          release.community = release.community || {};
-          release.community.rating = rating;
-          this.setState({releases});
-        });
-      })
-    })
-  }*/
 }
+
+App.propTypes = {
+  artists: PropTypes.array.isRequired,
+  releases: PropTypes.array.isRequired,
+  onSearchForArtist: PropTypes.func.isRequired,
+  onGetArtistReleases: PropTypes.func.isRequired,
+};
+
+export default App;
