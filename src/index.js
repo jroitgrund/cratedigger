@@ -8,7 +8,7 @@ import actionsFactory from './actions';
 import App from './App';
 import axios from 'axios';
 import Discogs from './lib/Discogs';
-import PaginatedHttpService from './lib/PaginatedHttpService';
+import PaginatedHttpService, {REQUESTS_PER_MINUTE} from './lib/PaginatedHttpService';
 import score from './lib/score';
 import Throttler from './lib/Throttler';
 import reducers from './reducers';
@@ -17,7 +17,12 @@ const TOKEN = 'grcVabYRkUKTfMhkZoUJOzHQyeumEYkiAsUtMJjw';
 
 const store = createStore(reducers, applyMiddleware(thunkMiddleware));
 const actions = actionsFactory(
-  new Discogs(new PaginatedHttpService(axios, Throttler, TOKEN), score));
+  new Discogs(
+    new PaginatedHttpService(
+      axios,
+      new Throttler(REQUESTS_PER_MINUTE),
+      TOKEN),
+    score));
 
 const ConnectedApp = connect(
   state => state,

@@ -26,9 +26,9 @@ describe('Discogs', function () {
   describe('getArtistReleases', function () {
     it('queries the service for releases and returns them', function () {
       paginatedHttpService.expects('getPaginatedUrl')
-          .once()
-          .withArgs('https://api.discogs.com/artists/1/releases', 'releases')
-          .returns(Promise.resolve('foo'));
+        .once()
+        .withArgs('https://api.discogs.com/artists/1/releases', 'releases')
+        .returns(Promise.resolve('foo'));
 
       const releases = discogs.getArtistReleases(1);
 
@@ -40,9 +40,9 @@ describe('Discogs', function () {
   describe('searchForArtist', function () {
     it('queries the service for releases and returns them', function () {
       paginatedHttpService.expects('getPaginatedUrl')
-          .once()
-          .withArgs('https://api.discogs.com/database/search?q=foo&type=artist', 'results')
-          .returns(Promise.resolve('foo'));
+        .once()
+        .withArgs('https://api.discogs.com/database/search?q=foo&type=artist', 'results')
+        .returns(Promise.resolve('foo'));
 
       const releases = discogs.searchForArtist('foo');
 
@@ -54,16 +54,16 @@ describe('Discogs', function () {
   describe('getReleaseRating', function () {
     it('returns the rating of a non-master release', function () {
       paginatedHttpService.expects('getUrl')
-          .once()
-          .withArgs('url')
-          .returns(Promise.resolve({
-            community: {
-              rating: {
-                average: 1,
-                count: 2,
-              },
+        .once()
+        .withArgs('url')
+        .returns(Promise.resolve({
+          community: {
+            rating: {
+              average: 1,
+              count: 2,
             },
-          }));
+          },
+        }));
       score.returns(3);
 
       const rating = discogs.getReleaseRating({ resource_url: 'url' });
@@ -73,6 +73,53 @@ describe('Discogs', function () {
         average: 1,
         count: 2,
         score: 3,
+      });
+    });
+
+    it('aggregates all the version of a master release', function () {
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('url')
+        .returns(Promise.resolve({
+          versions_url: 'versions_url',
+        }));
+      paginatedHttpService.expects('getPaginatedUrl')
+          .once()
+          .withArgs('versions_url', 'versions')
+          .returns(Promise.resolve([
+              { resource_url: 'resource_1_url' },
+              { resource_url: 'resource_2_url' },
+            ]));
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('resource_1_url')
+        .returns(Promise.resolve({
+          community: {
+            rating: {
+              average: 7,
+              count: 1,
+            },
+          },
+        }));
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('resource_2_url')
+        .returns(Promise.resolve({
+          community: {
+            rating: {
+              average: 1,
+              count: 2,
+            },
+          },
+        }));
+      score.returns(7);
+
+      const rating = discogs.getReleaseRating({ resource_url: 'url' });
+
+      return rating.should.eventually.eql({
+        average: 3,
+        count: 3,
+        score: 7,
       });
     });
   });

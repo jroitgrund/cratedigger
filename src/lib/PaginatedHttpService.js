@@ -1,11 +1,11 @@
 import URI from 'urijs';
 
-const REQUESTS_PER_MINUTE = 240;
+export const REQUESTS_PER_MINUTE = 240;
 
 export default class PaginatedHttpService {
-  constructor(axios, Throttler, TOKEN) {
+  constructor(axios, throttler, TOKEN) {
     this.axios = axios;
-    this.throttler = new Throttler(REQUESTS_PER_MINUTE);
+    this.throttler = throttler;
     this.TOKEN = TOKEN;
   }
 
@@ -15,8 +15,9 @@ export default class PaginatedHttpService {
   }
 
   getUrl(url) {
-    return this.throttler.do(() => this.axios.get(new URI(url).addQuery('token', this.TOKEN)))
-        .then(res => res.data);
+    return this.throttler.do(() => this.axios.get(
+        new URI(url).addQuery('token', this.TOKEN).toString()))
+      .then(res => res.data);
   }
 
   // Private
@@ -31,7 +32,7 @@ export default class PaginatedHttpService {
 
         // else
         return Promise.all([response].concat([...Array(pages - 1).keys()].map(
-          page => this.getUrl(new URI(url).addQuery('page', page + 2)))));
+          page => this.getUrl(new URI(url).addQuery('page', page + 2).toString()))));
       });
   }
 }
