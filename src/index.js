@@ -8,7 +8,7 @@ import actionsFactory from './actions';
 import App from './App';
 import axios from 'axios';
 import Discogs from './lib/Discogs';
-import PaginatedHttpService, {REQUESTS_PER_MINUTE} from './lib/PaginatedHttpService';
+import PaginatedHttpService, { REQUESTS_PER_MINUTE } from './lib/PaginatedHttpService';
 import score from './lib/score';
 import Throttler from './lib/Throttler';
 import reducers from './reducers';

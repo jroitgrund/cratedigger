@@ -8,7 +8,6 @@ import Discogs from '../../src/lib/Discogs';
 chai.should();
 
 describe('Discogs', function () {
-
   let discogs;
   let paginatedHttpService;
   let score;

@@ -8,7 +8,6 @@ import PaginatedHttpService from '../../src/lib/PaginatedHttpService';
 chai.should();
 
 describe('PaginatedHttpService', function () {
-
   let axios;
   let paginatedHttpService;
   let throttler;
