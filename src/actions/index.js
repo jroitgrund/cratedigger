@@ -23,21 +23,19 @@ const actions = discogs => {
 
   const receiveAndGetRatingsForReleases = (dispatch, releases) => {
     dispatch(receiveReleases(releases));
-    Promise.all(releases.map(release => discogs.getReleaseRating(release))).then(
+    return Promise.all(releases.map(release => discogs.getReleaseRating(release))).then(
       ratings => dispatch(receiveRatings(ratings)));
   };
 
   // Public actions
 
-  const searchForArtist = searchTerm => dispatch => {
+  const searchForArtist = searchTerm => dispatch =>
     discogs.searchForArtist(searchTerm).then(
       artists => dispatch(receiveArtists(artists)));
-  };
 
-  const getArtistReleases = artist => dispatch => {
+  const getArtistReleases = artist => dispatch =>
     discogs.getArtistReleases(artist.id).then(
       releases => receiveAndGetRatingsForReleases(dispatch, releases));
-  };
 
   return {
     searchForArtist,

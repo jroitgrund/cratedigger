@@ -29,10 +29,10 @@ describe('Discogs', function () {
         .withArgs('https://api.discogs.com/artists/1/releases', 'releases')
         .returns(Promise.resolve('foo'));
 
-      const releases = discogs.getArtistReleases(1);
-
-      paginatedHttpService.verify();
-      return releases.should.eventually.eql('foo');
+      return discogs.getArtistReleases(1).then(releases => {
+        paginatedHttpService.verify();
+        releases.should.eql('foo');
+      });
     });
   });
 
@@ -43,10 +43,10 @@ describe('Discogs', function () {
         .withArgs('https://api.discogs.com/database/search?q=foo&type=artist', 'results')
         .returns(Promise.resolve('foo'));
 
-      const releases = discogs.searchForArtist('foo');
-
-      paginatedHttpService.verify();
-      return releases.should.eventually.eql('foo');
+      return discogs.searchForArtist('foo').then(releases => {
+        paginatedHttpService.verify();
+        releases.should.eql('foo');
+      });
     });
   });
 
@@ -65,13 +65,13 @@ describe('Discogs', function () {
         }));
       score.returns(3);
 
-      const rating = discogs.getReleaseRating({ resource_url: 'url' });
-
-      paginatedHttpService.verify();
-      return rating.should.eventually.eql({
-        average: 1,
-        count: 2,
-        score: 3,
+      return discogs.getReleaseRating({ resource_url: 'url' }).then(rating => {
+        paginatedHttpService.verify();
+        return rating.should.eql({
+          average: 1,
+          count: 2,
+          score: 3,
+        });
       });
     });
 
@@ -88,7 +88,7 @@ describe('Discogs', function () {
           .returns(Promise.resolve([
               { resource_url: 'resource_1_url' },
               { resource_url: 'resource_2_url' },
-            ]));
+          ]));
       paginatedHttpService.expects('getUrl')
         .once()
         .withArgs('resource_1_url')
@@ -113,12 +113,13 @@ describe('Discogs', function () {
         }));
       score.returns(7);
 
-      const rating = discogs.getReleaseRating({ resource_url: 'url' });
-
-      return rating.should.eventually.eql({
-        average: 3,
-        count: 3,
-        score: 7,
+      return discogs.getReleaseRating({ resource_url: 'url' }).then(rating => {
+        paginatedHttpService.verify();
+        rating.should.eql({
+          average: 3,
+          count: 3,
+          score: 7,
+        });
       });
     });
   });

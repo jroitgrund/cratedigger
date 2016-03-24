@@ -3,7 +3,7 @@ import update from 'react-addons-update';
 const releases = (state = [], action) => {
   switch (action.type) {
     case 'RECEIVE_RELEASES':
-      return [...action.payload.releases];
+      return action.payload.releases;
     case 'RECEIVE_RATINGS':
       return state
         .map((release, i) => update(

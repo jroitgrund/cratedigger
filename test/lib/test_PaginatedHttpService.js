@@ -29,10 +29,10 @@ describe('PaginatedHttpService', function () {
         .withArgs('http://foo.url/?token=the_token')
         .returns(Promise.resolve({ data: 'foo' }));
 
-      const result = paginatedHttpService.getUrl('http://foo.url');
-
-      axios.verify();
-      return result.should.eventually.eql('foo');
+      return paginatedHttpService.getUrl('http://foo.url').then(result => {
+        axios.verify();
+        result.should.eql('foo');
+      });
     });
   });
 
@@ -48,10 +48,10 @@ describe('PaginatedHttpService', function () {
           },
         }));
 
-      const result = paginatedHttpService.getPaginatedUrl('http://foo.url', 'foo');
-
-      axios.verify();
-      return result.should.eventually.eql(['foo']);
+      return paginatedHttpService.getPaginatedUrl('http://foo.url', 'foo').then(result => {
+        axios.verify();
+        result.should.eql(['foo']);
+      });
     });
 
     it('aggregates all the pages when there are several', function () {
@@ -83,9 +83,10 @@ describe('PaginatedHttpService', function () {
           },
         }));
 
-      const result = paginatedHttpService.getPaginatedUrl('http://foo.url', 'foo');
-
-      return result.should.eventually.eql(['foo', 'bar', 'baz']);
+      return paginatedHttpService.getPaginatedUrl('http://foo.url', 'foo').then(result => {
+        axios.verify();
+        result.should.eql(['foo', 'bar', 'baz']);
+      });
     });
   });
 });
