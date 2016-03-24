@@ -1,5 +1,5 @@
 {
-  "name": "crate-digger",
+  "name": "cratedigger",
   "version": "1.0.0",
   "description": "SPA browser for Discogs supporting sort-by-rating.",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jroitgrund/spa-discogs.git"
+    "url": "https://github.com/jroitgrund/cratedigger.git"
   },
   "keywords": [
     "discogs",
@@ -20,9 +20,9 @@
   "author": "Jonathan Roitgrund <jonathan@roitgrund.me> (http://github.com/jroitgrund)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jroitgrund/spa-discogs/issues"
+    "url": "https://github.com/jroitgrund/cratedigger/issues"
   },
-  "homepage": "https://github.com/jroitgrund/spa-discogs",
+  "homepage": "https://github.com/jroitgrund/cratedigger",
   "devDependencies": {
     "babel-core": "^6.0.20",
     "babel-eslint": "^4.1.3",
