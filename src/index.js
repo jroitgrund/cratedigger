@@ -28,7 +28,7 @@ const ConnectedApp = connect(
   state => state,
   dispatch => ({
     onSearchForArtist: searchTerm => dispatch(actions.searchForArtist(searchTerm)),
-    onGetArtistReleases: artist => dispatch(actions.getArtistReleases(artist)),
+    onGetArtistReleases: artistId => dispatch(actions.getArtistReleases(artistId)),
   })
   )(App);
 

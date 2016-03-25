@@ -37,15 +37,15 @@ describe('Discogs', function () {
   });
 
   describe('searchForArtist', function () {
-    it('queries the service for releases and returns them', function () {
-      paginatedHttpService.expects('getPaginatedUrl')
+    it('queries the service for artists and returns them', function () {
+      paginatedHttpService.expects('getUrl')
         .once()
-        .withArgs('https://api.discogs.com/database/search?q=foo&type=artist', 'results')
-        .returns(Promise.resolve('foo'));
+        .withArgs('https://api.discogs.com/database/search?q=foo&type=artist')
+        .returns(Promise.resolve({ results: 'foo' }));
 
-      return discogs.searchForArtist('foo').then(releases => {
+      return discogs.searchForArtist('foo').then(artists => {
         paginatedHttpService.verify();
-        releases.should.eql('foo');
+        artists.should.eql('foo');
       });
     });
   });

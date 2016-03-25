@@ -59,7 +59,7 @@ describe('actions', function () {
         .withArgs('bar')
         .returns(Promise.resolve('bar_rating'));
 
-      return actions.getArtistReleases({ id: 1 })(dispatch).then(() => {
+      return actions.getArtistReleases(1)(dispatch).then(() => {
         Discogs.verify();
         sinon.assert.calledTwice(dispatch);
         sinon.assert.calledWith(dispatch, {

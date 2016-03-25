@@ -1,48 +1,47 @@
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes } from 'react';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
 
-class App extends Component {
-  render() {
-    return (
-      <div>
-      <form className="form-inline">
-        <div className="form-group">
-            <input className="form-control" type="text" ref="artistText" />
-        </div>
-        <div className="form-group">
-          <input type="button"
-            className="btn btn-block btn-lg btn-primary"
-            onClick={() => this.props.onSearchForArtist(this.refs.artistText.value)}
-            value="Search"
-          />
-        </div>
-      </form>
-      <div className="row">
-        <ul className="col-md-4">
-          {this.props.artists.map((artist, i) =>
-            <li key={i}>
-              <a onClick={() => this.props.onGetArtistReleases(artist)}>
-                {artist.title}
-              </a>
-            </li>)}
-        </ul>
-        <ul className="col-md-4">
-          {this.props.releases.map((release, i) =>
-            <li key={i}>
-              <a href={release.resource_url} role="button">
-                {release.title} -
-                {release.community && release.community.rating && release.community.rating.score
-                  ? <span>{release.community.rating.score} -
-                          {release.community.rating.average} -
-                          {release.community.rating.count}</span>
-                  : ''}
-              </a>
-            </li>)}
-        </ul>
-      </div>
-      </div>
-    );
-  }
-}
+const App = (props) => {
+  const options = props.artists.map(artist => ({
+    value: artist.id,
+    label: artist.title,
+  }));
+  return (
+    <div>
+    <Select
+      autoblur
+      options={options}
+      onInputChange={
+        (input) => {if (input.length !== 0) props.onSearchForArtist(input);}
+      }
+      onChange={(option) => props.onGetArtistReleases(option.value)}
+      placeholder="Search for artist..."
+      scrollMenuIntoView={false}
+    />
+    <div className="row">
+      <ul className="col-md-4">
+        {props.releases.map((release, i) =>
+          <li key={i}>
+            <a href={release.resource_url
+                .replace('https://api.', 'https://')
+                .replace('/masters/', '/master/')
+                .replace('/releases/', '/release/')}
+              role="button"
+            >
+              {release.title} -
+              {release.community && release.community.rating && release.community.rating.score
+                ? <span>{release.community.rating.score} -
+                        {release.community.rating.average} -
+                        {release.community.rating.count}</span>
+                : ''}
+            </a>
+          </li>)}
+      </ul>
+    </div>
+    </div>
+  );
+};
 
 App.propTypes = {
   artists: PropTypes.array.isRequired,

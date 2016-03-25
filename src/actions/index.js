@@ -33,8 +33,8 @@ const actions = discogs => {
     discogs.searchForArtist(searchTerm).then(
       artists => dispatch(receiveArtists(artists)));
 
-  const getArtistReleases = artist => dispatch =>
-    discogs.getArtistReleases(artist.id).then(
+  const getArtistReleases = artistId => dispatch =>
+    discogs.getArtistReleases(artistId).then(
       releases => receiveAndGetRatingsForReleases(dispatch, releases));
 
   return {

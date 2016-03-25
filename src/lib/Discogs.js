@@ -44,7 +44,7 @@ export default class Discogs {
   }
 
   searchForArtist(artistName) {
-    return this.paginatedHttpService.getPaginatedUrl(
-      `${URL_ROOT}/database/search?q=${artistName}&type=artist`, 'results');
+    return this.paginatedHttpService.getUrl(
+      `${URL_ROOT}/database/search?q=${artistName}&type=artist`).then(result => result.results);
   }
 }
