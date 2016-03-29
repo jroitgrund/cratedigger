@@ -22,30 +22,38 @@ describe('Discogs', function () {
     discogs = new Discogs(paginatedHttpServiceApi, score);
   });
 
-  describe('getArtistReleases', function () {
+  describe('getReleases', function () {
     it('queries the service for releases and returns them', function () {
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('resource.com')
+        .returns(Promise.resolve({ releases_url: 'releases.com' }));
       paginatedHttpService.expects('getPaginatedUrl')
         .once()
-        .withArgs('https://api.discogs.com/artists/1/releases', 'releases')
+        .withArgs('releases.com', 'releases')
         .returns(Promise.resolve('foo'));
 
-      return discogs.getArtistReleases(1).then(releases => {
+      return discogs.getReleases({ resource_url: 'resource.com' }).then(releases => {
         paginatedHttpService.verify();
         releases.should.eql('foo');
       });
     });
   });
 
-  describe('searchForArtist', function () {
-    it('queries the service for artists and returns them', function () {
+  describe('searchFor', function () {
+    it('queries the service for artists and labels and returns them', function () {
       paginatedHttpService.expects('getUrl')
         .once()
         .withArgs('https://api.discogs.com/database/search?q=foo&type=artist')
-        .returns(Promise.resolve({ results: 'foo' }));
+        .returns(Promise.resolve({ results: ['foo'] }));
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('https://api.discogs.com/database/search?q=foo&type=label')
+        .returns(Promise.resolve({ results: ['bar'] }));
 
-      return discogs.searchForArtist('foo').then(artists => {
+      return discogs.searchFor('foo').then(results => {
         paginatedHttpService.verify();
-        artists.should.eql('foo');
+        results.should.eql({ artists: ['foo'], labels: ['bar'] });
       });
     });
   });

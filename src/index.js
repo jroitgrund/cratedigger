@@ -27,8 +27,8 @@ const actions = actionsFactory(
 const ConnectedApp = connect(
   state => state,
   dispatch => ({
-    onSearchForArtist: searchTerm => dispatch(actions.searchForArtist(searchTerm)),
-    onGetArtistReleases: artistId => dispatch(actions.getArtistReleases(artistId)),
+    onSearchFor: searchTerm => dispatch(actions.searchFor(searchTerm)),
+    onGetReleases: artistOrLabel => dispatch(actions.getReleases(artistOrLabel)),
   })
   )(App);
 

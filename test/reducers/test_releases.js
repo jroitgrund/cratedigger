@@ -1,5 +1,4 @@
 import chai from 'chai';
-import sinon from 'sinon';
 
 import releases from '../../src/reducers/releases';
 

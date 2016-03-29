@@ -38,13 +38,19 @@ export default class Discogs {
     });
   }
 
-  getArtistReleases(artistId) {
-    return this.paginatedHttpService.getPaginatedUrl(
-      `${URL_ROOT}/artists/${artistId}/releases`, 'releases');
+  getReleases(artistOrLabel) {
+    return this.paginatedHttpService.getUrl(artistOrLabel.resource_url).then(
+      resource => this.paginatedHttpService.getPaginatedUrl(
+        resource.releases_url, 'releases'));
   }
 
-  searchForArtist(artistName) {
-    return this.paginatedHttpService.getUrl(
-      `${URL_ROOT}/database/search?q=${artistName}&type=artist`).then(result => result.results);
+  searchFor(query) {
+    return Promise.all([
+      this.paginatedHttpService.getUrl(
+        `${URL_ROOT}/database/search?q=${query}&type=artist`),
+      this.paginatedHttpService.getUrl(
+        `${URL_ROOT}/database/search?q=${query}&type=label`),
+    ]).then(
+      ([artists, labels]) => ({ artists: artists.results, labels: labels.results }));
   }
 }

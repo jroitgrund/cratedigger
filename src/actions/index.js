@@ -1,10 +1,8 @@
 const actions = discogs => {
   // Private internal actions.
-  const receiveArtists = artists => ({
-    type: 'RECEIVE_ARTISTS',
-    payload: {
-      artists,
-    },
+  const receiveArtistsAndLabels = artistsAndLabels => ({
+    type: 'RECEIVE_ARTISTS_AND_LABELS',
+    payload: artistsAndLabels,
   });
 
   const receiveReleases = releases => ({
@@ -29,17 +27,17 @@ const actions = discogs => {
 
   // Public actions
 
-  const searchForArtist = searchTerm => dispatch =>
-    discogs.searchForArtist(searchTerm).then(
-      artists => dispatch(receiveArtists(artists)));
+  const searchFor = searchTerm => dispatch =>
+    discogs.searchFor(searchTerm).then(
+      artistsAndLabels => dispatch(receiveArtistsAndLabels(artistsAndLabels)));
 
-  const getArtistReleases = artistId => dispatch =>
-    discogs.getArtistReleases(artistId).then(
+  const getReleases = artistOrLabel => dispatch =>
+    discogs.getReleases(artistOrLabel).then(
       releases => receiveAndGetRatingsForReleases(dispatch, releases));
 
   return {
-    searchForArtist,
-    getArtistReleases,
+    searchFor,
+    getReleases,
   };
 };
 

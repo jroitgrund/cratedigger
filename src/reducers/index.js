@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 
-import artists from './artists';
+import artistsAndLabels from './artists-and-labels';
 import releases from './releases';
 
 const reducers = combineReducers({
-  artists,
+  artistsAndLabels,
   releases,
 });
 

@@ -14,39 +14,37 @@ describe('actions', function () {
 
   beforeEach(function () {
     const discogsApi = {
-      getArtistReleases: () => undefined,
+      getReleases: () => undefined,
       getReleaseRating: () => undefined,
-      searchForArtist: () => undefined,
+      searchFor: () => undefined,
     };
     Discogs = sinon.mock(discogsApi);
     dispatch = sinon.spy();
     actions = actionsFactory(discogsApi);
   });
 
-  describe('searchForArtist', function () {
+  describe('searchFor', function () {
     it('fires an action with the results as the payload', function () {
-      Discogs.expects('searchForArtist')
+      Discogs.expects('searchFor')
         .once()
         .withArgs('artist')
         .returns(Promise.resolve('foo'));
 
-      return actions.searchForArtist('artist')(dispatch).then(() => {
+      return actions.searchFor('artist')(dispatch).then(() => {
         Discogs.verify();
         sinon.assert.calledOnce(dispatch);
         sinon.assert.calledWith(dispatch, {
-          type: 'RECEIVE_ARTISTS',
-          payload: {
-            artists: 'foo',
-          },
+          type: 'RECEIVE_ARTISTS_AND_LABELS',
+          payload: 'foo',
         });
       });
     });
   });
 
-  describe('getArtistReleases', function () {
+  describe('getReleases', function () {
     it('fires an action with the releases as the payload and an action with the ratings as the ' +
       'payload', function () {
-      Discogs.expects('getArtistReleases')
+      Discogs.expects('getReleases')
         .once()
         .withArgs(1)
         .returns(Promise.resolve(['foo', 'bar']));
@@ -59,7 +57,7 @@ describe('actions', function () {
         .withArgs('bar')
         .returns(Promise.resolve('bar_rating'));
 
-      return actions.getArtistReleases(1)(dispatch).then(() => {
+      return actions.getReleases(1)(dispatch).then(() => {
         Discogs.verify();
         sinon.assert.calledTwice(dispatch);
         sinon.assert.calledWith(dispatch, {
