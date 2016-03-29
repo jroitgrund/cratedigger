@@ -11,6 +11,7 @@ describe('actions', function () {
   let actions;
   let Discogs;
   let dispatch;
+  let throttler;
 
   beforeEach(function () {
     const discogsApi = {
@@ -18,9 +19,13 @@ describe('actions', function () {
       getReleaseRating: () => undefined,
       searchFor: () => undefined,
     };
+    const throttlerApi = {
+      clear: () => undefined,
+    };
     Discogs = sinon.mock(discogsApi);
+    throttler = sinon.mock(throttlerApi);
     dispatch = sinon.spy();
-    actions = actionsFactory(discogsApi);
+    actions = actionsFactory(discogsApi, throttlerApi);
   });
 
   describe('searchFor', function () {
@@ -29,9 +34,11 @@ describe('actions', function () {
         .once()
         .withArgs('artist')
         .returns(Promise.resolve('foo'));
+      throttler.expects('clear');
 
       return actions.searchFor('artist')(dispatch).then(() => {
         Discogs.verify();
+        throttler.verify();
         sinon.assert.calledOnce(dispatch);
         sinon.assert.calledWith(dispatch, {
           type: 'RECEIVE_ARTISTS_AND_LABELS',

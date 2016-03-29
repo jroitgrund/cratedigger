@@ -16,13 +16,16 @@ import reducers from './reducers';
 const TOKEN = 'grcVabYRkUKTfMhkZoUJOzHQyeumEYkiAsUtMJjw';
 
 const store = createStore(reducers, applyMiddleware(thunkMiddleware));
+
+const throttler = new Throttler(REQUESTS_PER_MINUTE);
 const actions = actionsFactory(
   new Discogs(
     new PaginatedHttpService(
       axios,
-      new Throttler(REQUESTS_PER_MINUTE),
+      throttler,
       TOKEN),
-    score));
+    score),
+    throttler);
 
 const ConnectedApp = connect(
   state => state,

@@ -1,4 +1,4 @@
-const actions = discogs => {
+const actions = (discogs, throttler) => {
   // Private internal actions.
   const receiveArtistsAndLabels = artistsAndLabels => ({
     type: 'RECEIVE_ARTISTS_AND_LABELS',
@@ -27,9 +27,11 @@ const actions = discogs => {
 
   // Public actions
 
-  const searchFor = searchTerm => dispatch =>
-    discogs.searchFor(searchTerm).then(
+  const searchFor = searchTerm => dispatch => {
+    throttler.clear();
+    return discogs.searchFor(searchTerm).then(
       artistsAndLabels => dispatch(receiveArtistsAndLabels(artistsAndLabels)));
+  };
 
   const getReleases = artistOrLabel => dispatch =>
     discogs.getReleases(artistOrLabel).then(
