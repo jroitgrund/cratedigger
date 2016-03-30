@@ -21,24 +21,33 @@ export default class Discogs {
     this.score = score;
   }
 
+  getReleaseDetailsForMaster(master) {
+    return this.paginatedHttpService.getPaginatedUrl(master.versions_url, 'versions')
+    .then(versions => Promise.all(versions.map(
+      version => this.paginatedHttpService.getUrl(version.resource_url))))
+    .then(versions => {
+      const count = versions.reduce(
+        (totalCount, version) => totalCount + version.community.rating.count, 0);
+      const average = versions.reduce((totalRating, version) => totalRating
+        + version.community.rating.average * version.community.rating.count, 0) / count;
+
+      return releaseWithRating(master, {
+        count,
+        average,
+        score: this.score(average, count),
+      });
+    });
+  }
+
+  // Public methods
+
   getReleaseDetails(releaseListing) {
     return this.paginatedHttpService.getUrl(releaseListing.resource_url).then(release => {
       if (release.versions_url) {
-        return this.paginatedHttpService.getPaginatedUrl(release.versions_url, 'versions')
-        .then(versions => Promise.all(versions.map(
-          version => this.paginatedHttpService.getUrl(version.resource_url))))
-        .then(versions => {
-          const count = versions.reduce(
-            (totalCount, version) => totalCount + version.community.rating.count, 0);
-          const average = versions.reduce((totalRating, version) => totalRating
-            + version.community.rating.average * version.community.rating.count, 0) / count;
-
-          return releaseWithRating(release, {
-            count,
-            average,
-            score: this.score(average, count),
-          });
-        });
+        return this.getReleaseDetailsForMaster(release);
+      } else if (release.master_url) {
+        return this.paginatedHttpService.getUrl(release.master_url).then(
+          this.getReleaseDetailsForMaster.bind(this));
       }
 
       // else

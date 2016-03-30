@@ -93,10 +93,72 @@ describe('Discogs', function () {
       });
     });
 
-    it('aggregates all the version of a master release', function () {
+    it('aggregates all the versions of a master release', function () {
       paginatedHttpService.expects('getUrl')
         .once()
         .withArgs('url')
+        .returns(Promise.resolve({
+          title: 'Foo',
+          versions_url: 'versions_url',
+        }));
+      paginatedHttpService.expects('getPaginatedUrl')
+          .once()
+          .withArgs('versions_url', 'versions')
+          .returns(Promise.resolve([
+              { resource_url: 'resource_1_url' },
+              { resource_url: 'resource_2_url' },
+          ]));
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('resource_1_url')
+        .returns(Promise.resolve({
+          community: {
+            rating: {
+              average: 7,
+              count: 1,
+            },
+          },
+        }));
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('resource_2_url')
+        .returns(Promise.resolve({
+          community: {
+            rating: {
+              average: 1,
+              count: 2,
+            },
+          },
+        }));
+      score.returns(7);
+
+      return discogs.getReleaseDetails({ resource_url: 'url' }).then(details => {
+        paginatedHttpService.verify();
+        details.should.eql({
+          title: 'Foo',
+          versions_url: 'versions_url',
+          community: {
+            rating: {
+              average: 3,
+              count: 3,
+              score: 7,
+            },
+          },
+        });
+      });
+    });
+
+    it('aggregates all the versions if passed a single version', function () {
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('url')
+        .returns(Promise.resolve({
+          title: 'Foo',
+          master_url: 'master_url',
+        }));
+      paginatedHttpService.expects('getUrl')
+        .once()
+        .withArgs('master_url')
         .returns(Promise.resolve({
           title: 'Foo',
           versions_url: 'versions_url',
