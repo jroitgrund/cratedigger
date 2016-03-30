@@ -15,25 +15,26 @@ describe('releases', function () {
 
   describe('RECEIVE_RELEASES', function () {
     it('sets the received releases', function () {
+      const release1 = { title: 'Foo' };
+      const release2 =
+          { title: 'Bar', community: { have: 6, want: 9, rating: { total: 8 } } };
       return releases(
         [],
         {
           type: 'RECEIVE_RELEASES',
-          payload: ['release1', 'release2'],
-        }).should.eql(['release1', 'release2']);
+          payload: [release1, release2],
+        }).should.eql([release1, release2]);
     });
   });
 
   describe('RECEIVE_RELEASE_DETAILS', function () {
-    it('sets the received details by rating order', function () {
-      const score5 = { community: { rating: { score: 5 } } };
-      const score4 = { community: { rating: { score: 4 } } };
+    it('sets the received details', function () {
       return releases(
         undefined,
         {
           type: 'RECEIVE_RELEASE_DETAILS',
-          payload: [score4, score5],
-        }).should.eql([score5, score4]);
+          payload: ['foo', 'bar'],
+        }).should.eql(['foo', 'bar']);
     });
   });
 });

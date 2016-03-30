@@ -3,8 +3,7 @@ const releases = (state = [], action) => {
     case 'RECEIVE_RELEASES':
       return action.payload;
     case 'RECEIVE_RELEASE_DETAILS':
-      return action.payload.sort((release1, release2) =>
-        release2.community.rating.score - release1.community.rating.score);
+      return action.payload;
     default:
       return state;
   }

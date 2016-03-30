@@ -54,19 +54,24 @@ describe('actions', function () {
   });
 
   describe('getReleases', function () {
-    it('fires an action with the releases as the payload and an action with the ratings as the ' +
-      'payload', function () {
+    it('fires an action with the de-duped releases as the payload and an action with the' +
+      'ratings as the payload', function () {
+      const release1 = { title: 'Foo' };
+      const release2Bad =
+          { title: 'Bar', community: { have: 7, want: 10, rating: { total: 5 } } };
+      const release2Good =
+          { title: 'Bar', community: { have: 6, want: 9, rating: { total: 8 } } };
       Discogs.expects('getReleases')
         .once()
         .withArgs(1)
-        .returns(Promise.resolve(['foo', 'bar']));
+        .returns(Promise.resolve([release1, release2Bad, release2Good]));
       Discogs.expects('getReleaseDetails')
         .once()
-        .withArgs('foo')
+        .withArgs(release1)
         .returns(Promise.resolve('foo_details'));
       Discogs.expects('getReleaseDetails')
         .once()
-        .withArgs('bar')
+        .withArgs(release2Good)
         .returns(Promise.resolve('bar_details'));
 
       return actions.getReleases(1)(dispatch).then(() => {
@@ -74,7 +79,7 @@ describe('actions', function () {
         sinon.assert.calledTwice(dispatch);
         sinon.assert.calledWith(dispatch, {
           type: 'RECEIVE_RELEASES',
-          payload: ['foo', 'bar'],
+          payload: [release1, release2Good],
         });
         sinon.assert.calledWith(dispatch, {
           type: 'RECEIVE_RELEASE_DETAILS',

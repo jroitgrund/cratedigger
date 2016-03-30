@@ -4,7 +4,7 @@ const getArtistsString = release =>
   (release.artists
     ? release.artists.reduce(
         (artistString, artist, index, artists) =>
-          `${artistString} ${artist.name} ${index === artists.length ? '' : artist.join}`,
+          `${artistString} ${artist.name} ${index === artists.length - 1 ? '' : artist.join}`,
         '')
     : '');
 
