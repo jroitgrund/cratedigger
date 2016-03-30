@@ -2,7 +2,7 @@ export default class Throttler {
   constructor(requestsPerMinute) {
     this.requestsPerMinute = requestsPerMinute;
     this.requests = [];
-    this.timeouts = [];
+    this.events = [];
   }
 
   isFull() {
@@ -12,7 +12,10 @@ export default class Throttler {
 
   clear() {
     const now = new Date().getTime();
-    this.timeouts.forEach(clearTimeout);
+    this.events.forEach(event => {
+      clearTimeout(event.timeout);
+      event.reject();
+    });
     this.requests = this.requests.map(time => {
       if (time < now) {
         return time;
@@ -30,11 +33,15 @@ export default class Throttler {
     if (this.requests.length >= this.requestsPerMinute) {
       const nextRequestTime = this.requests.shift() + 65000;
       this.requests.push(nextRequestTime);
-      return new Promise((resolve) => {
-        this.timeouts.push(setTimeout(
+      const event = {};
+      const promise = new Promise((resolve, reject) => {
+        event.reject = reject;
+        event.timeout = setTimeout(
           () => resolve(action()),
-          Math.max(0, nextRequestTime - now)));
+          Math.max(0, nextRequestTime - now));
       });
+      this.events.push(event);
+      return promise;
     }
 
     // else

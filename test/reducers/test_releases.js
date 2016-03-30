@@ -7,6 +7,12 @@ import releases from '../../src/reducers/releases';
 chai.should();
 
 describe('releases', function () {
+  describe('default state', function () {
+    it('is', function () {
+      releases(undefined, { type: undefined }).should.eql([]);
+    });
+  });
+
   describe('RECEIVE_RELEASES', function () {
     it('sets the received releases', function () {
       return releases(

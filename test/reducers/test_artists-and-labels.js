@@ -7,9 +7,15 @@ import artistsAndLabels from '../../src/reducers/artists-and-labels';
 chai.should();
 
 describe('artistsAndLabels', function () {
+  describe('default state', function () {
+    it('is', function () {
+      artistsAndLabels(undefined, { type: undefined }).should.eql({ artists: [], labels: [] });
+    });
+  });
+
   describe('RECEIVE_ARTISTS_AND_LABELS', function () {
     it('sets the received artists and labels', function () {
-      return artistsAndLabels(
+      artistsAndLabels(
         {},
         {
           type: 'RECEIVE_ARTISTS_AND_LABELS',

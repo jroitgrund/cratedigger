@@ -35,15 +35,19 @@ describe('actions', function () {
         .once()
         .withArgs('artist')
         .returns(Promise.resolve('foo'));
-      throttler.expects('clear');
+      throttler.expects('clear').once();
+      throttler.expects('isFull').once().returns(true);
 
       return actions.searchFor('artist')(dispatch).then(() => {
         Discogs.verify();
         throttler.verify();
-        sinon.assert.calledOnce(dispatch);
+        sinon.assert.calledTwice(dispatch);
         sinon.assert.calledWith(dispatch, {
           type: 'RECEIVE_ARTISTS_AND_LABELS',
           payload: 'foo',
+        });
+        sinon.assert.calledWith(dispatch, {
+          type: 'QUEUE_FULL',
         });
       });
     });

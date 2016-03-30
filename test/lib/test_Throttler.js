@@ -52,4 +52,26 @@ describe('Throttler', function () {
 
     throttler.do(() => 5).should.eventually.equal(5).notify(done);
   });
+
+  describe('clear', function () {
+    it('rejects future events', function () {
+      throttler.do(() => {});
+      clock.tick(5);
+      throttler.do(() => {});
+
+      // Queued at t0 + 65000.
+      const toBeCleared = throttler.do(() => {});
+
+      throttler.clear();
+
+      // Also queued at 65000 due to clearing.
+      const toRun = throttler.do(() => 5);
+      clock.tick(60000);
+
+      return Promise.all([
+        toBeCleared.should.be.rejected,
+        toRun.should.eventually.equal(5),
+      ]);
+    });
+  });
 });
