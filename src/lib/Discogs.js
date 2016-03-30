@@ -15,6 +15,27 @@ const releaseWithRating = (release, rating) =>
     },
   });
 
+const releasePopularity = release => {
+  let popularity = 0;
+  if (release.community) {
+    if (release.community.want !== undefined) {
+      popularity += release.community.want;
+    }
+
+    if (release.community.have !== undefined) {
+      popularity += release.community.have;
+    }
+
+    if (release.community.rating) {
+      if (release.community.rating.total !== undefined) {
+        popularity += release.community.rating.total;
+      }
+    }
+  }
+
+  return popularity;
+};
+
 export default class Discogs {
   constructor(paginatedHttpService, score) {
     this.paginatedHttpService = paginatedHttpService;
@@ -31,11 +52,14 @@ export default class Discogs {
       const average = versions.reduce((totalRating, version) => totalRating
         + version.community.rating.average * version.community.rating.count, 0) / count;
 
-      return releaseWithRating(master, {
-        count,
-        average,
-        score: this.score(average, count),
-      });
+      return releaseWithRating(
+        versions.sort((release1, release2) =>
+          releasePopularity(release2) - releasePopularity(release1))[0],
+        {
+          count,
+          average,
+          score: this.score(average, count),
+        });
     });
   }
 

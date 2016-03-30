@@ -135,8 +135,6 @@ describe('Discogs', function () {
       return discogs.getReleaseDetails({ resource_url: 'url' }).then(details => {
         paginatedHttpService.verify();
         details.should.eql({
-          title: 'Foo',
-          versions_url: 'versions_url',
           community: {
             rating: {
               average: 3,
@@ -153,14 +151,12 @@ describe('Discogs', function () {
         .once()
         .withArgs('url')
         .returns(Promise.resolve({
-          title: 'Foo',
           master_url: 'master_url',
         }));
       paginatedHttpService.expects('getUrl')
         .once()
         .withArgs('master_url')
         .returns(Promise.resolve({
-          title: 'Foo',
           versions_url: 'versions_url',
         }));
       paginatedHttpService.expects('getPaginatedUrl')
@@ -186,6 +182,7 @@ describe('Discogs', function () {
         .withArgs('resource_2_url')
         .returns(Promise.resolve({
           community: {
+            want: 6,
             rating: {
               average: 1,
               count: 2,
@@ -197,9 +194,8 @@ describe('Discogs', function () {
       return discogs.getReleaseDetails({ resource_url: 'url' }).then(details => {
         paginatedHttpService.verify();
         details.should.eql({
-          title: 'Foo',
-          versions_url: 'versions_url',
           community: {
+            want: 6,
             rating: {
               average: 3,
               count: 3,
