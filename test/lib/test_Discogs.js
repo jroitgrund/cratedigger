@@ -23,7 +23,7 @@ describe('Discogs', function () {
   });
 
   describe('getReleases', function () {
-    it('queries the service for releases and returns them', function () {
+    it('queries the service for releases and returns the main ones', function () {
       paginatedHttpService.expects('getUrl')
         .once()
         .withArgs('resource.com')
@@ -31,11 +31,14 @@ describe('Discogs', function () {
       paginatedHttpService.expects('getPaginatedUrl')
         .once()
         .withArgs('releases.com', 'releases')
-        .returns(Promise.resolve('foo'));
+        .returns(Promise.resolve([
+          { role: 'Foo' },
+          { role: 'Main' },
+        ]));
 
       return discogs.getReleases({ resource_url: 'resource.com' }).then(releases => {
         paginatedHttpService.verify();
-        releases.should.eql('foo');
+        releases.should.eql([{ role: 'Main' }]);
       });
     });
   });

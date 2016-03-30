@@ -25,10 +25,18 @@ const actions = (discogs, throttler) => {
       ratings => dispatch(receiveRatings(ratings)));
   };
 
+  const queueFull = () => ({
+    type: 'QUEUE_FULL',
+  });
+
   // Public actions
 
   const searchFor = searchTerm => dispatch => {
     throttler.clear();
+    if (throttler.isFull()) {
+      dispatch(queueFull());
+    }
+
     return discogs.searchFor(searchTerm).then(
       artistsAndLabels => dispatch(receiveArtistsAndLabels(artistsAndLabels)));
   };

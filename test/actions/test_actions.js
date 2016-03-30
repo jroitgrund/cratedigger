@@ -21,6 +21,7 @@ describe('actions', function () {
     };
     const throttlerApi = {
       clear: () => undefined,
+      isFull: () => undefined,
     };
     Discogs = sinon.mock(discogsApi);
     throttler = sinon.mock(throttlerApi);
