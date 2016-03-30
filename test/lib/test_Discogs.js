@@ -33,12 +33,13 @@ describe('Discogs', function () {
         .withArgs('releases.com', 'releases')
         .returns(Promise.resolve([
           { role: 'Foo' },
+          { },
           { role: 'Main' },
         ]));
 
       return discogs.getReleases({ resource_url: 'resource.com' }).then(releases => {
         paginatedHttpService.verify();
-        releases.should.eql([{ role: 'Main' }]);
+        releases.should.eql([{ }, { role: 'Main' }]);
       });
     });
   });

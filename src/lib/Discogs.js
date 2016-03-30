@@ -42,7 +42,8 @@ export default class Discogs {
     return this.paginatedHttpService.getUrl(artistOrLabel.resource_url).then(
       resource => this.paginatedHttpService.getPaginatedUrl(
         resource.releases_url, 'releases').then(
-        releases => releases.filter(release => release.role === 'Main')));
+        releases => releases.filter(release =>
+          release.role === 'Main' || release.role === undefined)));
   }
 
   searchFor(query) {
