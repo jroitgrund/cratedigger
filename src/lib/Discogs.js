@@ -2,13 +2,26 @@ import update from 'react-addons-update';
 
 const URL_ROOT = 'https://api.discogs.com';
 
+const releaseWithRating = (release, rating) =>
+  update(release, {
+    community: {
+      $apply: community => (community
+        ? update(community, {
+          rating: {
+            $set: rating,
+          },
+        })
+        : { rating }),
+    },
+  });
+
 export default class Discogs {
   constructor(paginatedHttpService, score) {
     this.paginatedHttpService = paginatedHttpService;
     this.score = score;
   }
 
-  getReleaseRating(releaseListing) {
+  getReleaseDetails(releaseListing) {
     return this.paginatedHttpService.getUrl(releaseListing.resource_url).then(release => {
       if (release.versions_url) {
         return this.paginatedHttpService.getPaginatedUrl(release.versions_url, 'versions')
@@ -19,22 +32,23 @@ export default class Discogs {
             (totalCount, version) => totalCount + version.community.rating.count, 0);
           const average = versions.reduce((totalRating, version) => totalRating
             + version.community.rating.average * version.community.rating.count, 0) / count;
-          return {
+
+          return releaseWithRating(release, {
             count,
             average,
             score: this.score(average, count),
-          };
+          });
         });
       }
 
       // else
-      return Promise.resolve(update(
+      return Promise.resolve(releaseWithRating(release, update(
         release.community.rating,
         {
           $merge: {
             score: this.score(release.community.rating.average, release.community.rating.count),
           },
-        }));
+        })));
     });
   }
 

@@ -16,7 +16,7 @@ describe('actions', function () {
   beforeEach(function () {
     const discogsApi = {
       getReleases: () => undefined,
-      getReleaseRating: () => undefined,
+      getReleaseDetails: () => undefined,
       searchFor: () => undefined,
     };
     const throttlerApi = {
@@ -60,29 +60,25 @@ describe('actions', function () {
         .once()
         .withArgs(1)
         .returns(Promise.resolve(['foo', 'bar']));
-      Discogs.expects('getReleaseRating')
+      Discogs.expects('getReleaseDetails')
         .once()
         .withArgs('foo')
-        .returns(Promise.resolve('foo_rating'));
-      Discogs.expects('getReleaseRating')
+        .returns(Promise.resolve('foo_details'));
+      Discogs.expects('getReleaseDetails')
         .once()
         .withArgs('bar')
-        .returns(Promise.resolve('bar_rating'));
+        .returns(Promise.resolve('bar_details'));
 
       return actions.getReleases(1)(dispatch).then(() => {
         Discogs.verify();
         sinon.assert.calledTwice(dispatch);
         sinon.assert.calledWith(dispatch, {
           type: 'RECEIVE_RELEASES',
-          payload: {
-            releases: ['foo', 'bar'],
-          },
+          payload: ['foo', 'bar'],
         });
         sinon.assert.calledWith(dispatch, {
-          type: 'RECEIVE_RATINGS',
-          payload: {
-            ratings: ['foo_rating', 'bar_rating'],
-          },
+          type: 'RECEIVE_RELEASE_DETAILS',
+          payload: ['foo_details', 'bar_details'],
         });
       });
     });

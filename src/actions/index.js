@@ -7,22 +7,18 @@ const actions = (discogs, throttler) => {
 
   const receiveReleases = releases => ({
     type: 'RECEIVE_RELEASES',
-    payload: {
-      releases,
-    },
+    payload: releases,
   });
 
-  const receiveRatings = ratings => ({
-    type: 'RECEIVE_RATINGS',
-    payload: {
-      ratings,
-    },
+  const receiveReleaseDetails = details => ({
+    type: 'RECEIVE_RELEASE_DETAILS',
+    payload: details,
   });
 
   const receiveAndGetRatingsForReleases = (dispatch, releases) => {
     dispatch(receiveReleases(releases));
-    return Promise.all(releases.map(release => discogs.getReleaseRating(release))).then(
-      ratings => dispatch(receiveRatings(ratings)));
+    return Promise.all(releases.map(release => discogs.getReleaseDetails(release))).then(
+      details => dispatch(receiveReleaseDetails(details)));
   };
 
   const queueFull = () => ({

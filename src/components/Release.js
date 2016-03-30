@@ -3,7 +3,8 @@ import React, { PropTypes } from 'react';
 const getArtistsString = release =>
   (release.artists
     ? release.artists.reduce(
-        (artistString, artist) => `${artistString} ${artist.name} ${artist.join}`,
+        (artistString, artist, index, artists) =>
+          `${artistString} ${artist.name} ${index === artists.length ? '' : artist.join}`,
         '')
     : '');
 

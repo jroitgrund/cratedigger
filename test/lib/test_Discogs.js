@@ -62,12 +62,13 @@ describe('Discogs', function () {
     });
   });
 
-  describe('getReleaseRating', function () {
-    it('returns the rating of a non-master release', function () {
+  describe('getReleaseDetails', function () {
+    it('returns the details and rating of a non-master release', function () {
       paginatedHttpService.expects('getUrl')
         .once()
         .withArgs('url')
         .returns(Promise.resolve({
+          title: 'Foo',
           community: {
             rating: {
               average: 1,
@@ -77,12 +78,17 @@ describe('Discogs', function () {
         }));
       score.returns(3);
 
-      return discogs.getReleaseRating({ resource_url: 'url' }).then(rating => {
+      return discogs.getReleaseDetails({ resource_url: 'url' }).then(details => {
         paginatedHttpService.verify();
-        return rating.should.eql({
-          average: 1,
-          count: 2,
-          score: 3,
+        return details.should.eql({
+          title: 'Foo',
+          community: {
+            rating: {
+              average: 1,
+              count: 2,
+              score: 3,
+            },
+          },
         });
       });
     });
@@ -92,6 +98,7 @@ describe('Discogs', function () {
         .once()
         .withArgs('url')
         .returns(Promise.resolve({
+          title: 'Foo',
           versions_url: 'versions_url',
         }));
       paginatedHttpService.expects('getPaginatedUrl')
@@ -125,12 +132,18 @@ describe('Discogs', function () {
         }));
       score.returns(7);
 
-      return discogs.getReleaseRating({ resource_url: 'url' }).then(rating => {
+      return discogs.getReleaseDetails({ resource_url: 'url' }).then(details => {
         paginatedHttpService.verify();
-        rating.should.eql({
-          average: 3,
-          count: 3,
-          score: 7,
+        details.should.eql({
+          title: 'Foo',
+          versions_url: 'versions_url',
+          community: {
+            rating: {
+              average: 3,
+              count: 3,
+              score: 7,
+            },
+          },
         });
       });
     });

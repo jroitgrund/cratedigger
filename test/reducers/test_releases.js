@@ -19,31 +19,21 @@ describe('releases', function () {
         [],
         {
           type: 'RECEIVE_RELEASES',
-          payload: {
-            releases: ['release1', 'release2'],
-          },
+          payload: ['release1', 'release2'],
         }).should.eql(['release1', 'release2']);
     });
   });
 
-  describe('RECEIVE_RATINGS', function () {
-    it('sets the received ratings', function () {
+  describe('RECEIVE_RELEASE_DETAILS', function () {
+    it('sets the received details by rating order', function () {
+      const score5 = { community: { rating: { score: 5 } } };
+      const score4 = { community: { rating: { score: 4 } } };
       return releases(
-        [
-          {},
-          { community: { foo: 'foo' } },
-          { foo: 'foo', community: { rating: 'foo' } },
-        ],
+        undefined,
         {
-          type: 'RECEIVE_RATINGS',
-          payload: {
-            ratings: ['foo', 'bar', 'baz'],
-          },
-        }).should.eql([
-          { community: { rating: 'foo' } },
-          { community: { rating: 'bar' } },
-          { foo: 'foo', community: { rating: 'baz' } },
-        ]);
+          type: 'RECEIVE_RELEASE_DETAILS',
+          payload: [score4, score5],
+        }).should.eql([score5, score4]);
     });
   });
 });
