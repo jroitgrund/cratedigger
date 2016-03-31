@@ -1,57 +1,26 @@
-import update from 'react-addons-update';
-
-const releasePopularity = release => {
-  let popularity = 0;
-  if (release.community) {
-    if (release.community.want !== undefined) {
-      popularity += release.community.want;
-    }
-
-    if (release.community.have !== undefined) {
-      popularity += release.community.have;
-    }
-
-    if (release.community.rating) {
-      if (release.community.rating.total !== undefined) {
-        popularity += release.community.rating.total;
-      }
-    }
-  }
-
-  return popularity;
-};
-
-const getDedupedReleases = releases => {
-  const dedupedReleases = releases.reduce(
-    (dedupedSoFar, release) => {
-      const title = release.title;
-      if (dedupedSoFar[title] === undefined ||
-        releasePopularity(release) > releasePopularity(dedupedSoFar[title])) {
-        return update(dedupedSoFar, {
-          [title]: {
-            $set: release,
-          },
-        });
-      }
-
-      return dedupedSoFar;
-    },
-
-    {
-    });
-  return Object.keys(dedupedReleases).map(key => dedupedReleases[key]);
-};
-
-const actions = (discogs, throttler) => {
+const actions = (discogs, releaseUtil, throttler) => {
   // Private internal actions.
+  const startSearch = () => ({
+    type: 'START_SEARCH',
+  });
+
   const receiveArtistsAndLabels = artistsAndLabels => ({
     type: 'RECEIVE_ARTISTS_AND_LABELS',
     payload: artistsAndLabels,
   });
 
-  const receiveReleases = releases => ({
-    type: 'RECEIVE_RELEASES',
-    payload: releases,
+  const receiveNumReleases = numReleases => ({
+    type: 'RECEIVE_NUM_RELEASES',
+    payload: numReleases,
+  });
+
+  const receiveRelease = () => ({
+    type: 'RECEIVE_RELEASE',
+  });
+
+  const receiveNumDedupedReleases = (numReleases) => ({
+    type: 'RECEIVE_NUM_DEDUPED_RELEASES',
+    payload: numReleases,
   });
 
   const receiveReleaseDetails = details => ({
@@ -59,19 +28,34 @@ const actions = (discogs, throttler) => {
     payload: details,
   });
 
-  const receiveAndGetRatingsForReleases = (dispatch, releases) => {
-    dispatch(receiveReleases(releases));
-    return Promise.all(releases.map(release => discogs.getReleaseDetails(release))).then(
-      details => dispatch(receiveReleaseDetails(details)));
-  };
+  const getDetailsForReleases = (dispatch, releaseStubs) =>
+    Promise.all(releaseStubs
+        .map(stub => discogs.getReleaseDetails(stub)
+          .then(detail => {
+            dispatch(receiveRelease());
+            return detail;
+          })))
+      .then(releaseUtil.getDedupedReleases)
+      .then(releases => {
+        dispatch(receiveNumDedupedReleases(releases.length));
+        return releases;
+      })
+      .then(releases => Promise.all(releases
+        .map(release => discogs.aggregateReleaseRatings(release)
+          .then(rating => {
+            dispatch(receiveRelease());
+            return rating;
+          }))))
+      .then(receiveReleaseDetails)
+      .then(dispatch);
 
   const queueFull = () => ({
     type: 'QUEUE_FULL',
   });
 
   // Public actions
-
   const searchFor = searchTerm => dispatch => {
+    dispatch(startSearch());
     throttler.clear();
     if (throttler.isFull()) {
       dispatch(queueFull());
@@ -82,8 +66,10 @@ const actions = (discogs, throttler) => {
   };
 
   const getReleases = artistOrLabel => dispatch =>
-    discogs.getReleases(artistOrLabel).then(
-      releases => receiveAndGetRatingsForReleases(dispatch, getDedupedReleases(releases)));
+    discogs.getReleases(artistOrLabel).then(releases => {
+      dispatch(receiveNumReleases(releases.length));
+      return getDetailsForReleases(dispatch, releases);
+    });
 
   const setSort = sort => ({
     type: 'SET_SORT',
@@ -92,8 +78,8 @@ const actions = (discogs, throttler) => {
 
   return {
     searchFor,
-    setSort,
     getReleases,
+    setSort,
   };
 };
 

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 import Release from './Release';
 
-const getSortForAttributes = (attributeList, desc=false) => (object1, object2) => {
+const getSortForAttributes = (attributeList, desc = false) => (object1, object2) => {
   let attribute1 = object1;
   let attribute2 = object2;
   for (const attribute of attributeList) {
@@ -53,7 +53,7 @@ const dateSort = (release1, release2) => {
 
 const titleSort = getSortForAttributes(['title']);
 const artistSort = getSortForAttributes(['artists', 0, 'name']);
-const labelSort = getSortForAttributes(['label']);
+const labelSort = getSortForAttributes(['labels', 0, 'name']);
 const scoreSort = getSortForAttributes(['community', 'rating', 'score'], true);
 
 const sortReleases = (sort) => {
@@ -73,32 +73,35 @@ const sortReleases = (sort) => {
   }
 };
 
-const ReleasesTable = (props) =>
-  <table className="table table-striped table-condensed">
+const getOnSetSortCallback = onSetSort => (event) => onSetSort(event.target.dataset.sort);
+
+const ReleasesTable = (props) => {
+  const onSetSort = getOnSetSortCallback(props.onSetSort);
+  return (<table className="table table-striped table-condensed">
     <thead>
       <tr>
         <th>
-          <a tabIndex="0" role="button" onClick={props.onSetSort.bind(undefined, 'TITLE')}>
+          <a tabIndex="0" role="button" data-sort="TITLE" onClick={onSetSort}>
             Name
           </a>
         </th>
         <th>
-          <a tabIndex="0" role="button" onClick={props.onSetSort.bind(undefined, 'ARTIST')}>
+          <a tabIndex="0" role="button" data-sort="ARTIST" onClick={onSetSort}>
             Artist
           </a>
         </th>
         <th>
-          <a tabIndex="0" role="button" onClick={props.onSetSort.bind(undefined, 'LABEL')}>
+          <a tabIndex="0" role="button" data-sort="LABEL" onClick={onSetSort}>
           Label
           </a>
         </th>
         <th>
-          <a tabIndex="0" role="button" onClick={props.onSetSort.bind(undefined, 'DATE')}>
+          <a tabIndex="0" role="button" data-sort="DATE" onClick={onSetSort}>
             Date
           </a>
         </th>
         <th>
-          <a tabIndex="0" role="button" onClick={props.onSetSort.bind(undefined, 'SCORE')}>
+          <a tabIndex="0" role="button" data-sort="SCORE" onClick={onSetSort}>
             Rating
           </a>
         </th>
@@ -108,7 +111,8 @@ const ReleasesTable = (props) =>
       {props.releases.sort(sortReleases(props.sort)).map((release, i) =>
         <Release release={release} key={i} />)}
     </tbody>
-  </table>;
+  </table>);
+};
 
 ReleasesTable.propTypes = {
   releases: PropTypes.array.isRequired,

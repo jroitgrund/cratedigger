@@ -15,106 +15,73 @@ const releaseWithRating = (release, rating) =>
     },
   });
 
-const releasePopularity = release => {
-  let popularity = 0;
-  if (release.community) {
-    if (release.community.want !== undefined) {
-      popularity += release.community.want;
-    }
-
-    if (release.community.have !== undefined) {
-      popularity += release.community.have;
-    }
-
-    if (release.community.rating) {
-      if (release.community.rating.total !== undefined) {
-        popularity += release.community.rating.total;
-      }
-    }
-  }
-
-  return popularity;
-};
-
-const trimReleaseFields = release => update(release, {
-  title: {
-    $set: release.title.trim(),
-  },
-  artists: {
-    $set: release.artists ? release.artists.map(artist => update(artist, {
-      name: {
-        $set: artist.name.trim(),
-      },
-    })) : undefined,
-  },
-});
-
 export default class Discogs {
-  constructor(paginatedHttpService, score) {
-    this.paginatedHttpService = paginatedHttpService;
-    this.score = score;
+  constructor(paginatedHttpService, releaseUtil, score) {
+    this._paginatedHttpService = paginatedHttpService;
+    this._releaseUtil = releaseUtil;
+    this._score = score;
   }
 
-  getReleaseDetailsForMaster(master) {
-    return this.paginatedHttpService.getPaginatedUrl(master.versions_url, 'versions')
+  _aggregateRatingsForMaster(master) {
+    return this._paginatedHttpService.getPaginatedUrl(master.versions_url, 'versions')
     .then(versions => Promise.all(versions.map(
-      version => this.paginatedHttpService.getUrl(version.resource_url))))
+      version => this._paginatedHttpService.getUrl(version.resource_url))))
     .then(versions => {
       const count = versions.reduce(
         (totalCount, version) => totalCount + version.community.rating.count, 0);
       const average = versions.reduce((totalRating, version) => totalRating
         + version.community.rating.average * version.community.rating.count, 0) / count;
 
-      const bestRelease = versions.sort((release1, release2) =>
-          releasePopularity(release2) - releasePopularity(release1))[0];
+      const bestRelease = this._releaseUtil.mostPopularRelease(versions);
 
       return releaseWithRating(
-        trimReleaseFields(bestRelease),
+        this._releaseUtil.trimReleaseFields(bestRelease),
         {
           count,
           average,
-          score: this.score(average, count),
+          score: this._score(average, count),
         });
     });
   }
 
   // Public methods
-
-  getReleaseDetails(releaseListing) {
-    return this.paginatedHttpService.getUrl(releaseListing.resource_url).then(release => {
-      if (release.versions_url) {
-        return this.getReleaseDetailsForMaster(release);
-      } else if (release.master_url) {
-        return this.paginatedHttpService.getUrl(release.master_url).then(
-          this.getReleaseDetailsForMaster.bind(this));
-      }
-
-      // else
-      return Promise.resolve(releaseWithRating(release, update(
-        release.community.rating,
-        {
-          $merge: {
-            score: this.score(release.community.rating.average, release.community.rating.count),
-          },
-        })));
-    });
-  }
-
-  getReleases(artistOrLabel) {
-    return this.paginatedHttpService.getUrl(artistOrLabel.resource_url).then(
-      resource => this.paginatedHttpService.getPaginatedUrl(
-        resource.releases_url, 'releases').then(
-        releases => releases.filter(release =>
-          release.role === 'Main' || release.role === undefined).map(trimReleaseFields)));
-  }
-
   searchFor(query) {
     return Promise.all([
-      this.paginatedHttpService.getUrl(
+      this._paginatedHttpService.getUrl(
         `${URL_ROOT}/database/search?q=${query}&type=artist`),
-      this.paginatedHttpService.getUrl(
+      this._paginatedHttpService.getUrl(
         `${URL_ROOT}/database/search?q=${query}&type=label`),
     ]).then(
       ([artists, labels]) => ({ artists: artists.results, labels: labels.results }));
+  }
+
+  getReleases(artistOrLabel) {
+    return this._paginatedHttpService.getUrl(artistOrLabel.resource_url).then(
+      resource => this._paginatedHttpService.getPaginatedUrl(
+        resource.releases_url, 'releases').then(
+        releases => releases.filter(release =>
+          release.role === 'Main' || release.role === undefined)));
+  }
+
+  getReleaseDetails(releaseStub) {
+    return this._paginatedHttpService.getUrl(releaseStub.resource_url);
+  }
+
+  aggregateReleaseRatings(release) {
+    if (release.versions_url) {
+      return this._aggregateRatingsForMaster(release);
+    } else if (release.master_url) {
+      return this._paginatedHttpService.getUrl(release.master_url)
+        .then(this._aggregateRatingsForMaster.bind(this));
+    }
+
+    // else
+    return Promise.resolve(releaseWithRating(this._releaseUtil.trimReleaseFields(release), update(
+      release.community.rating,
+      {
+        $merge: {
+          score: this._score(release.community.rating.average, release.community.rating.count),
+        },
+      })));
   }
 }
