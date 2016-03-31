@@ -11,15 +11,19 @@ const App = props =>
       onGetReleases={props.onGetReleases}
       onSearchFor={props.onSearchFor}
     />
-    <MainDisplay releases={props.releases} sort={props.sort} onSetSort={props.onSetSort} />
+    <MainDisplay
+      onSetSort={props.onSetSort}
+      releases={props.releases}
+      sort={props.sort}
+    />
   </div>);
 
 App.propTypes = {
   artistsAndLabels: PropTypes.object.isRequired,
-  releases: PropTypes.object.isRequired,
   onGetReleases: PropTypes.func.isRequired,
   onSearchFor: PropTypes.func.isRequired,
   onSetSort: PropTypes.func.isRequired,
+  releases: PropTypes.object.isRequired,
   sort: PropTypes.string.isRequired,
 };
 
