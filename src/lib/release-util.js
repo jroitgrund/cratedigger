@@ -26,12 +26,20 @@ const _releasePopularity = release => {
 const getDedupedReleases = releases => {
   const dedupedReleases = releases.reduce(
     (dedupedSoFar, release) => {
-      const title = release.title;
-      if (dedupedSoFar[title] === undefined ||
-        _releasePopularity(release) > _releasePopularity(dedupedSoFar[title])) {
+      const masterId = release.master_id;
+      if (masterId === undefined) {
         return update(dedupedSoFar, {
-          [title]: {
-            $set: release,
+          singles: { $push: [release] },
+        });
+      }
+
+      if (dedupedSoFar.dupes[masterId] === undefined ||
+        _releasePopularity(release) > _releasePopularity(dedupedSoFar.dupes[masterId])) {
+        return update(dedupedSoFar, {
+          dupes: {
+            [masterId]: {
+              $set: release,
+            },
           },
         });
       }
@@ -40,8 +48,13 @@ const getDedupedReleases = releases => {
     },
 
     {
+      singles: [],
+      dupes: {},
     });
-  return Object.keys(dedupedReleases).map(key => dedupedReleases[key]);
+  return [
+    ...dedupedReleases.singles,
+    ...Object.keys(dedupedReleases.dupes).map(key => dedupedReleases.dupes[key]),
+  ];
 };
 
 const mostPopularRelease = releases =>
