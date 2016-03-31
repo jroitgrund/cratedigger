@@ -8,17 +8,19 @@ const App = props =>
   <div>
     <Search
       artistsAndLabels={props.artistsAndLabels}
-      onSearchFor={props.onSearchFor}
       onGetReleases={props.onGetReleases}
+      onSearchFor={props.onSearchFor}
     />
-    <ReleasesTable releases={props.releases} />
+    <ReleasesTable releases={props.releases} sort={props.sort} onSetSort={props.onSetSort} />
   </div>;
 
 App.propTypes = {
   artistsAndLabels: PropTypes.object.isRequired,
   releases: PropTypes.array.isRequired,
-  onSearchFor: PropTypes.func.isRequired,
   onGetReleases: PropTypes.func.isRequired,
+  onSearchFor: PropTypes.func.isRequired,
+  onSetSort: PropTypes.func.isRequired,
+  sort: PropTypes.string.isRequired,
 };
 
 export default App;

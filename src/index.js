@@ -32,6 +32,7 @@ const ConnectedApp = connect(
   dispatch => ({
     onSearchFor: searchTerm => dispatch(actions.searchFor(searchTerm)),
     onGetReleases: artistOrLabel => dispatch(actions.getReleases(artistOrLabel)),
+    onSetSort: sort => dispatch(actions.setSort(sort)),
   })
   )(App);
 

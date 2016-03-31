@@ -24,7 +24,7 @@ const releasePopularity = release => {
 const getDedupedReleases = releases => {
   const dedupedReleases = releases.reduce(
     (dedupedSoFar, release) => {
-      const title = release.title.trim();
+      const title = release.title;
       if (dedupedSoFar[title] === undefined ||
         releasePopularity(release) > releasePopularity(dedupedSoFar[title])) {
         return update(dedupedSoFar, {
@@ -85,8 +85,14 @@ const actions = (discogs, throttler) => {
     discogs.getReleases(artistOrLabel).then(
       releases => receiveAndGetRatingsForReleases(dispatch, getDedupedReleases(releases)));
 
+  const setSort = sort => ({
+    type: 'SET_SORT',
+    payload: sort,
+  });
+
   return {
     searchFor,
+    setSort,
     getReleases,
   };
 };

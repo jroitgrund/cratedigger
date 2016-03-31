@@ -88,4 +88,13 @@ describe('actions', function () {
       });
     });
   });
+
+  describe('sort', function () {
+    it('sends a sort action', function () {
+      actions.setSort('FOO').should.eql({
+        payload: 'FOO',
+        type: 'SET_SORT',
+      });
+    });
+  });
 });

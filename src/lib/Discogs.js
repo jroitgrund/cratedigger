@@ -36,6 +36,19 @@ const releasePopularity = release => {
   return popularity;
 };
 
+const trimReleaseFields = release => update(release, {
+  title: {
+    $set: release.title.trim(),
+  },
+  artists: {
+    $set: release.artists ? release.artists.map(artist => update(artist, {
+      name: {
+        $set: artist.name.trim(),
+      },
+    })) : undefined,
+  },
+});
+
 export default class Discogs {
   constructor(paginatedHttpService, score) {
     this.paginatedHttpService = paginatedHttpService;
@@ -52,9 +65,11 @@ export default class Discogs {
       const average = versions.reduce((totalRating, version) => totalRating
         + version.community.rating.average * version.community.rating.count, 0) / count;
 
+      const bestRelease = versions.sort((release1, release2) =>
+          releasePopularity(release2) - releasePopularity(release1))[0];
+
       return releaseWithRating(
-        versions.sort((release1, release2) =>
-          releasePopularity(release2) - releasePopularity(release1))[0],
+        trimReleaseFields(bestRelease),
         {
           count,
           average,
@@ -90,7 +105,7 @@ export default class Discogs {
       resource => this.paginatedHttpService.getPaginatedUrl(
         resource.releases_url, 'releases').then(
         releases => releases.filter(release =>
-          release.role === 'Main' || release.role === undefined)));
+          release.role === 'Main' || release.role === undefined).map(trimReleaseFields)));
   }
 
   searchFor(query) {
