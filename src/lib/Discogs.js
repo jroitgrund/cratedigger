@@ -38,7 +38,7 @@ export default class Discogs {
         this._releaseUtil.trimReleaseFields(bestRelease),
         {
           count,
-          average,
+          average: Math.round(average * 100) / 100,
           score: this._score(average, count),
         });
     });
@@ -80,6 +80,7 @@ export default class Discogs {
       release.community.rating,
       {
         $merge: {
+          average: Math.round(release.community.rating.average * 100) / 100,
           score: this._score(release.community.rating.average, release.community.rating.count),
         },
       })));
