@@ -17,6 +17,7 @@ const MainDisplay = props => {
   if (props.releases.status === 'DISPLAYING_RELEASES') {
     return (
       <ReleasesTable
+        onGetReleases={props.onGetReleases}
         onSetSort={props.onSetSort}
         releases={props.releases.releases}
         sort={props.sort}
@@ -28,6 +29,7 @@ const MainDisplay = props => {
 
 MainDisplay.propTypes = {
   onSetSort: PropTypes.func.isRequired,
+  onGetReleases: PropTypes.func.isRequired,
   releases: PropTypes.object.isRequired,
   sort: PropTypes.string.isRequired,
 };

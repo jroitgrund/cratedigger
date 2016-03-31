@@ -12,6 +12,7 @@ const App = props =>
       onSearchFor={props.onSearchFor}
     />
     <MainDisplay
+      onGetReleases={props.onGetReleases}
       onSetSort={props.onSetSort}
       releases={props.releases}
       sort={props.sort}

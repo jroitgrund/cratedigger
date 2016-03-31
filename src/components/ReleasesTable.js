@@ -3,9 +3,9 @@ import React, { PropTypes } from 'react';
 import Release from './Release';
 import getSortFunction from '../lib/sort';
 
-const getOnSetSortCallback = onSetSort => (event) => onSetSort(event.target.dataset.sort);
+const getOnSetSortCallback = onSetSort => event => onSetSort(event.target.dataset.sort);
 
-const ReleasesTable = (props) => {
+const ReleasesTable = props => {
   const onSetSort = getOnSetSortCallback(props.onSetSort);
   return (<table className="table table-striped table-condensed">
     <thead>
@@ -39,13 +39,14 @@ const ReleasesTable = (props) => {
     </thead>
     <tbody>
       {props.releases.sort(getSortFunction(props.sort)).map((release, i) =>
-        <Release release={release} key={i} />)}
+        <Release release={release} key={i} onGetReleases={props.onGetReleases} />)}
     </tbody>
   </table>);
 };
 
 ReleasesTable.propTypes = {
   releases: PropTypes.array.isRequired,
+  onGetReleases: PropTypes.func.isRequired,
   onSetSort: PropTypes.func.isRequired,
   sort: PropTypes.string.isRequired,
 };
