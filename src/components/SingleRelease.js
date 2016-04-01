@@ -13,10 +13,10 @@ const formatTrack = artistName => (track, index) => (
         'https://www.youtube.com/results?search_query=' +
         `${artistName.split(' ').join('+')}+${track.title.split(' ').join('+')}`)}
       >
-        <img src="/img/youtube.ico" />
+        <img src="img/youtube.ico" />
       </a>&nbsp;
       <a href={encodeURI(`https://soundcloud.com/search?q=${artistName} ${track.title}`)}>
-        <img src="/img/soundcloud.ico" />
+        <img src="img/soundcloud.ico" />
       </a>&nbsp;
       {track.duration}
     </div>

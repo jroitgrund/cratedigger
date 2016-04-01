@@ -20,7 +20,7 @@ const Release = (props) => (
       >
         {props.release.title}
       </a>
-      <a href={props.release.uri}> <img src="/img/discogs.ico" /></a>
+      <a href={props.release.uri}> <img src="img/discogs.ico" /></a>
     </td>
     <td>{props.release.artists.map(props.formatResource)}</td>
     <td>{props.release.labels.map(props.formatResource)}</td>
