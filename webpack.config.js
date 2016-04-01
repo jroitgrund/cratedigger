@@ -1,12 +1,16 @@
 var path = require('path');
 var webpack = require('webpack');
 
+var definePlugin = new webpack.DefinePlugin({
+  'process.env.NODE_ENV': '"production"',
+});
+
 module.exports = {
   entry: [
     './src/index',
   ],
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'static'),
     filename: 'bundle.js',
     publicPath: '/static/',
   },
@@ -23,4 +27,5 @@ module.exports = {
       },
     ],
   },
+  plugins: [definePlugin],
 };
