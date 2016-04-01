@@ -1,7 +1,7 @@
-const artistsAndLabels = (state = { artists: [], labels: [] }, action) => {
+const artistsAndLabels = (state = [], action) => {
   switch (action.type) {
     case 'RECEIVE_ARTISTS_AND_LABELS':
-      return { artists: action.payload.artists, labels: action.payload.labels };
+      return action.payload;
     default:
       return state;
   }

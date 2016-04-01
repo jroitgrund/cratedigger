@@ -52,7 +52,7 @@ export default class Discogs {
       this._paginatedHttpService.getUrl(
         `${URL_ROOT}/database/search?q=${query}&type=label`),
     ]).then(
-      ([artists, labels]) => ({ artists: artists.results, labels: labels.results }));
+      ([artists, labels]) => ([...artists.results, ...labels.results]));
   }
 
   getReleases(artistOrLabel) {

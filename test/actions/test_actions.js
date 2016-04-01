@@ -135,4 +135,22 @@ describe('actions', function () {
       });
     });
   });
+
+  describe('backToReleases', function () {
+    it('sends a back to releases action', function () {
+      actions.backToReleases().should.eql({
+        type: 'BACK_TO_RELEASES',
+      });
+    });
+  });
+
+  describe('displayRelease', function () {
+    it('sends a display release action', function () {
+      const release = { title: 'Foo' };
+      actions.displayRelease(release).should.eql({
+        type: 'DISPLAY_SINGLE_RELEASE',
+        payload: release,
+      });
+    });
+  });
 });

@@ -55,7 +55,7 @@ describe('releases', function () {
 
   describe('RECEIVE_RELEASE_DETAILS', function () {
     it('sets the received details and updates the status', function () {
-      return releases(
+      releases(
         {},
         {
           type: 'RECEIVE_RELEASE_DETAILS',
@@ -64,6 +64,29 @@ describe('releases', function () {
           status: 'DISPLAYING_RELEASES',
           releases: ['foo', 'bar'],
         });
+    });
+  });
+
+  describe('DISPLAY_SINGLE_RELEASE', function () {
+    it('sets the status to display a single release', function () {
+      const release = { title: 'Foo' };
+      releases({}, {
+        type: 'DISPLAY_SINGLE_RELEASE',
+        payload: release,
+      }).should.eql({
+        status: 'DISPLAYING_SINGLE_RELEASE',
+        release,
+      });
+    });
+  });
+
+  describe('BACK_TO_RELEASES', function () {
+    it('sets the status to display all releases', function () {
+      releases({}, {
+        type: 'BACK_TO_RELEASES',
+      }).should.eql({
+        status: 'DISPLAYING_RELEASES',
+      });
     });
   });
 });

@@ -29,6 +29,15 @@ const releases = (state = defaultState, action) => {
         status: { $set: 'DISPLAYING_RELEASES' },
         releases: { $set: action.payload },
       });
+    case 'DISPLAY_SINGLE_RELEASE':
+      return update(state, {
+        status: { $set: 'DISPLAYING_SINGLE_RELEASE' },
+        release: { $set: action.payload },
+      });
+    case 'BACK_TO_RELEASES':
+      return update(state, {
+        status: { $set: 'DISPLAYING_RELEASES' },
+      });
     default:
       return state;
   }

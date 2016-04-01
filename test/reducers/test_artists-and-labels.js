@@ -9,7 +9,7 @@ chai.should();
 describe('artistsAndLabels', function () {
   describe('default state', function () {
     it('is', function () {
-      artistsAndLabels(undefined, { type: undefined }).should.eql({ artists: [], labels: [] });
+      artistsAndLabels(undefined, { type: undefined }).should.eql([]);
     });
   });
 
@@ -19,14 +19,8 @@ describe('artistsAndLabels', function () {
         {},
         {
           type: 'RECEIVE_ARTISTS_AND_LABELS',
-          payload: {
-            artists: ['foo'],
-            labels: ['bar'],
-          },
-        }).should.eql({
-          artists: ['foo'],
-          labels: ['bar'],
-        });
+          payload: ['foo', 'bar'],
+        }).should.eql(['foo', 'bar']);
     });
   });
 });

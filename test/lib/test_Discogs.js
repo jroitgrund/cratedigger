@@ -72,7 +72,7 @@ describe('Discogs', function () {
 
       return discogs.searchFor(searchTerm).then(results => {
         paginatedHttpService.verify();
-        results.should.eql({ artists, labels });
+        results.should.eql(['foo', 'bar']);
       });
     });
   });

@@ -76,10 +76,21 @@ const actions = (discogs, releaseUtil, throttler) => {
     payload: sort,
   });
 
+  const displayRelease = release => ({
+    type: 'DISPLAY_SINGLE_RELEASE',
+    payload: release,
+  });
+
+  const backToReleases = () => ({
+    type: 'BACK_TO_RELEASES',
+  });
+
   return {
+    displayRelease,
+    backToReleases,
     searchFor,
-    getReleases,
     setSort,
+    getReleases,
   };
 };
 

@@ -2,8 +2,7 @@ import React, { PropTypes } from 'react';
 import Select from 'react-select';
 
 const Search = props => {
-  const artistsAndLabels = [...props.artistsAndLabels.artists, ...props.artistsAndLabels.labels];
-  const options = artistsAndLabels.map((artistOrLabel, index) => ({
+  const options = props.artistsAndLabels.map((artistOrLabel, index) => ({
     value: index,
     label: artistOrLabel.title,
   }));
@@ -11,10 +10,8 @@ const Search = props => {
       <Select
         autoblur
         options={options}
-        onInputChange={
-          (input) => {if (input.length !== 0) props.onSearchFor(input);}
-        }
-        onChange={(option) => props.onGetReleases(artistsAndLabels[option.value])}
+        onInputChange={props.onSearchFor}
+        onChange={props.onGetReleases}
         placeholder="Search for artist or label.."
         scrollMenuIntoView={false}
       />
@@ -22,7 +19,7 @@ const Search = props => {
 };
 
 Search.propTypes = {
-  artistsAndLabels: PropTypes.object.isRequired,
+  artistsAndLabels: PropTypes.array.isRequired,
   onSearchFor: PropTypes.func.isRequired,
   onGetReleases: PropTypes.func.isRequired,
 };
