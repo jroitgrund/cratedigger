@@ -48,7 +48,7 @@ const SingleRelease = props => (
         {props.release.tracklist.map(formatTrack(props.release.artists[0].name))}
       </div>
       <div className="col-md-4">
-        {props.release.videos.map(formatVideo)}
+        {props.release.videos ? props.release.videos.map(formatVideo) : ''}
       </div>
     </div>
   </div>);
