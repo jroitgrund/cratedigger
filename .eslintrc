@@ -2,5 +2,29 @@
   "extends": "airbnb",
   "env": {
     "mocha": true,
+    "browser": true,
+    "es6": true
   },
+  "globals": {
+      "chai": true,
+      "sinon": false
+  },
+  "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+          "jsx": true
+      }
+  },
+  "rules": {
+    "arrow-parens": "off",
+    "no-underscore-dangle": "off",
+    "react/forbid-prop-types": "off",
+    "react/jsx-filename-extension": "off",
+    "react/no-unused-prop-types": "off",
+    "react/no-array-index-key": "off",
+    "no-mixed-operators": "off",
+    "no-restricted-syntax": "off",
+    "prefer-spread": "off"
+  }
 }

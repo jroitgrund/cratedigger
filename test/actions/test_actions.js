@@ -1,6 +1,3 @@
-import chai from 'chai';
-import sinon from 'sinon';
-
 import actionsFactory from '../../src/actions';
 
 /* eslint-disable prefer-arrow-callback, func-names */

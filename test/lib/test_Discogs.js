@@ -1,6 +1,4 @@
-import chai from 'chai';
 import update from 'react-addons-update';
-import sinon from 'sinon';
 
 import Discogs from '../../src/lib/Discogs';
 

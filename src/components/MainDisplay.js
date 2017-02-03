@@ -35,7 +35,7 @@ const MainDisplay = props => {
     );
   }
 
-  return <noscript></noscript>;
+  return <noscript />;
 };
 
 MainDisplay.propTypes = {

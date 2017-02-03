@@ -14,7 +14,7 @@ const ConnectedApp = connect(state => state)(App);
 const Root = () => <ConnectedApp />;
 
 ReactDOM.render(
-    <Provider store={store}>
-      <Root />
-    </Provider>,
-    document.getElementById('root'));
+  <Provider store={store}>
+    <Root />
+  </Provider>,
+  document.getElementById('root'));

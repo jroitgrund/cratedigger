@@ -7,14 +7,14 @@ const Search = props => {
     label: artistOrLabel.title,
   }));
   return (
-      <Select
-        autoblur
-        options={options}
-        onInputChange={props.onSearchFor}
-        onChange={props.onGetReleases}
-        placeholder="Search for artist or label.."
-        scrollMenuIntoView={false}
-      />
+    <Select
+      autoblur
+      options={options}
+      onInputChange={props.onSearchFor}
+      onChange={props.onGetReleases}
+      placeholder="Search for artist or label.."
+      scrollMenuIntoView={false}
+    />
   );
 };
 

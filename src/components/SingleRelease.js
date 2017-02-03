@@ -9,14 +9,15 @@ const formatTrack = artistName => (track, index) => (
       {track.title}
     </div>
     <div className="col-md-2">
-      <a href={encodeURI(
-        'https://www.youtube.com/results?search_query=' +
-        `${artistName.split(' ').join('+')}+${track.title.split(' ').join('+')}`)}
+      <a
+        href={encodeURI(
+          'https://www.youtube.com/results?search_query=' +
+          `${artistName.split(' ').join('+')}+${track.title.split(' ').join('+')}`)}
       >
-        <img src="img/youtube.ico" />
+        <img alt="" src="img/youtube.ico" />
       </a>&nbsp;
       <a href={encodeURI(`https://soundcloud.com/search?q=${artistName} ${track.title}`)}>
-        <img src="img/soundcloud.ico" />
+        <img alt="" src="img/soundcloud.ico" />
       </a>&nbsp;
       {track.duration}
     </div>
@@ -24,7 +25,7 @@ const formatTrack = artistName => (track, index) => (
 );
 
 const formatVideo = (video, index) => (
-  <iframe key={index} src={video.uri.replace('watch?v=', 'embed/')}></iframe>
+  <iframe key={index} src={video.uri.replace('watch?v=', 'embed/')} />
 );
 
 const SingleRelease = props => (

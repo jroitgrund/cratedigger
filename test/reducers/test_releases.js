@@ -1,5 +1,3 @@
-import chai from 'chai';
-
 import releases from '../../src/reducers/releases';
 
 /* eslint-disable prefer-arrow-callback, func-names */

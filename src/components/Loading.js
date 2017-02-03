@@ -7,18 +7,19 @@ const Loading = props => {
   } else if (props.status === 'RECEIVING_RATINGS') {
     beingFetched = 'ratings';
   } else {
-    return (<noscript></noscript>);
+    return (<noscript />);
   }
 
   return (
     <div>
       <h1>Fetching {props.releasesFetched} / {props.numReleases} {beingFetched}</h1>
-      <hr style={{
-        width: `${Math.floor(100 * props.releasesFetched / props.numReleases)}%`,
-        height: '5px',
-        color: '#16a085',
-        backgroundColor: '#16a085',
-      }}
+      <hr
+        style={{
+          width: `${Math.floor(100 * props.releasesFetched / props.numReleases)}%`,
+          height: '5px',
+          color: '#16a085',
+          backgroundColor: '#16a085',
+        }}
       />
     </div>);
 };

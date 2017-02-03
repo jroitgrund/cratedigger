@@ -1,5 +1,3 @@
-import chai from 'chai';
-
 import getSortFunction from '../../src/lib/sort';
 
 /* eslint-disable prefer-arrow-callback, func-names */
