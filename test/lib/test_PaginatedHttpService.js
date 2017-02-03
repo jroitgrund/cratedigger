@@ -1,6 +1,3 @@
-import chai from 'chai';
-import sinon from 'sinon';
-
 import PaginatedHttpService from '../../src/lib/PaginatedHttpService';
 
 /* eslint-disable prefer-arrow-callback, func-names */

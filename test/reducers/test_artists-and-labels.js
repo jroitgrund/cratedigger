@@ -1,5 +1,3 @@
-import chai from 'chai';
-
 import artistsAndLabels from '../../src/reducers/artists-and-labels';
 
 /* eslint-disable prefer-arrow-callback, func-names */

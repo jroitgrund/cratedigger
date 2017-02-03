@@ -1,5 +1,3 @@
-import chai from 'chai';
-
 import releaseUtil from '../../src/lib/release-util';
 
 /* eslint-disable prefer-arrow-callback, func-names */

@@ -1,4 +1,3 @@
-import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import lolex from 'lolex';
 
@@ -42,7 +41,6 @@ describe('Throttler', function () {
 
   it('queues actions and performs them after a minute', function (done) {
     clock.uninstall();
-    setTimeout(() => done(), 1500);
     clock = lolex.install();
     throttler = new Throttler(2);
 
@@ -50,7 +48,9 @@ describe('Throttler', function () {
     throttler.do(() => {});
     clock.tick(65000);
 
-    throttler.do(() => 5).should.eventually.equal(5).notify(done);
+    throttler.do(() => 5).should.eventually.equal(5).notify(() => {
+      done();
+    });
   });
 
   describe('clear', function () {

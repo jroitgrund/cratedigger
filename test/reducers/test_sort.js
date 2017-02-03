@@ -1,5 +1,3 @@
-import chai from 'chai';
-
 import sort from '../../src/reducers/sort';
 
 /* eslint-disable prefer-arrow-callback, func-names */
