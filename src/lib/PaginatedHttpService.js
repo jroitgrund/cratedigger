@@ -1,6 +1,6 @@
 import URI from 'urijs';
 
-export const REQUESTS_PER_MINUTE = 240;
+export const REQUESTS_PER_MINUTE = 60;
 
 export default class PaginatedHttpService {
   constructor(axios, throttler, TOKEN) {
