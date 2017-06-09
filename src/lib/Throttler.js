@@ -1,51 +1,44 @@
 export default class Throttler {
-  constructor(requestsPerMinute) {
-    this.requestsPerMinute = requestsPerMinute;
+  constructor(requestsPerMinute, timers) {
     this.requests = [];
-    this.events = [];
-  }
-
-  isFull() {
-    return this.requests.filter(
-      time => time > new Date().getTime() - 65000).length < this.requestsPerMinute;
-  }
-
-  clear() {
-    const now = new Date().getTime();
-    this.events.forEach(event => {
-      clearTimeout(event.timeout);
-      event.reject();
-    });
-    this.requests = this.requests.map(time => {
-      if (time < now) {
-        return time;
-      }
-
-      // else
-      return time - 65000;
-    });
+    this.wave = 0;
+    this.tokens = requestsPerMinute;
+    this.timers = timers;
   }
 
   do(action) {
-    const now = new Date().getTime();
-    const filterTime = now - 65000;
-    this.requests = this.requests.filter(time => time > filterTime);
-    if (this.requests.length >= this.requestsPerMinute) {
-      const nextRequestTime = this.requests.shift() + 65000;
-      this.requests.push(nextRequestTime);
-      const event = {};
-      const promise = new Promise((resolve, reject) => {
-        event.reject = reject;
-        event.timeout = setTimeout(
-          () => resolve(action()),
-          Math.max(0, nextRequestTime - now));
-      });
-      this.events.push(event);
-      return promise;
-    }
+    const wave = this.wave;
+    const promise = new Promise((resolve, reject) => {
+      const runAction = () => {
+        if (this.wave === wave) {
+          resolve(action());
+          this.tokens -= 1;
+          this.timers.setTimeout(() => {
+            this.minuteElapsedAfterAction();
+          }, 70000);
+        } else {
+          reject();
+        }
+      };
 
-    // else
-    this.requests.push(now);
-    return Promise.resolve(action());
+      if (this.tokens > 0) {
+        runAction();
+      } else {
+        this.requests.unshift(runAction);
+      }
+    });
+
+    return promise;
+  }
+
+  minuteElapsedAfterAction() {
+    this.tokens += 1;
+    if (this.tokens > 0 && this.requests.length > 0) {
+      this.requests.pop()();
+    }
+  }
+
+  clear() {
+    this.wave += 1;
   }
 }

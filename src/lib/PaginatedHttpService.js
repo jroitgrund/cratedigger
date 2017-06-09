@@ -11,12 +11,18 @@ export default class PaginatedHttpService {
 
   getPaginatedUrl(url, concatKey) {
     return this._handlePaginatedResponse(this.getUrl(url), url)
-        .then(pages => [].concat.apply([], pages.map(page => page[concatKey])));
+      .then(pages => [].concat.apply([], pages.map(page => page[concatKey])));
   }
 
   getUrl(url) {
     return this.throttler.do(() => this.axios.get(
-        new URI(url).addQuery('token', this.TOKEN).toString()))
+      new URI(url).addQuery('token', this.TOKEN).toString(),
+      {
+        method: 'get',
+        headers: {
+          'User-Agent': 'cratedigger',
+        },
+      }))
       .then(res => res.data);
   }
 

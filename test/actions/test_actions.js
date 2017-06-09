@@ -24,7 +24,6 @@ describe('actions', function () {
     };
     const throttlerApi = {
       clear: () => undefined,
-      isFull: () => undefined,
     };
     Discogs = sinon.mock(discogsApi);
     throttler = sinon.mock(throttlerApi);
@@ -57,15 +56,11 @@ describe('actions', function () {
     it('it clears future events and triggers a queue full action' +
        'if the throttler queue is full', function () {
       throttler.expects('clear').once();
-      throttler.expects('isFull').once().returns(true);
       Discogs.expects('searchFor').returns(Promise.resolve());
 
       return actions.searchFor()(dispatch).then(() => {
         throttler.verify();
-        sinon.assert.calledThrice(dispatch);
-        sinon.assert.calledWith(dispatch, {
-          type: 'QUEUE_FULL',
-        });
+        sinon.assert.calledTwice(dispatch);
       });
     });
   });

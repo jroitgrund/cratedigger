@@ -49,17 +49,10 @@ const actions = (discogs, releaseUtil, throttler) => {
       .then(receiveReleaseDetails)
       .then(dispatch);
 
-  const queueFull = () => ({
-    type: 'QUEUE_FULL',
-  });
-
   // Public actions
   const searchFor = searchTerm => dispatch => {
     dispatch(startSearch());
     throttler.clear();
-    if (throttler.isFull()) {
-      dispatch(queueFull());
-    }
 
     return discogs.searchFor(searchTerm).then(
       artistsAndLabels => dispatch(receiveArtistsAndLabels(artistsAndLabels)));

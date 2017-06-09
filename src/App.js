@@ -14,7 +14,7 @@ import Throttler from './lib/Throttler';
 
 const TOKEN = 'grcVabYRkUKTfMhkZoUJOzHQyeumEYkiAsUtMJjw';
 
-const throttler = new Throttler(REQUESTS_PER_MINUTE);
+const throttler = new Throttler(REQUESTS_PER_MINUTE, window);
 const actions = actionsFactory(
   new Discogs(
     new PaginatedHttpService(
